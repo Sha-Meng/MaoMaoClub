@@ -1,0 +1,38 @@
+# Godot
+.godot/
+.import/
+*.translation
+export.cfg
+export_presets.cfg
+
+# Godot imported artifacts
+*.import
+
+# Exported builds and local artifacts
+builds/
+exports/
+dist/
+*.pck
+*.zip
+*.dmg
+*.app/
+*.exe
+
+# OS and editor
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.*
+*.keystore
+*.p12
+*.mobileprovision
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
