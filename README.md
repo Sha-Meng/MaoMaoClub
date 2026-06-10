@@ -17,3 +17,17 @@ The pinned engine version is defined in `AGENTS.md`, `.godot-version`, and
 - Godot entry point: `.agents/skills/maomao-godot/SKILL.md`
 - Production workflow: Codex Game Studios under `.agents/skills` and `.claude`
 - Godot expertise: selected `gd-agentic-skills` under `.agents/skills`
+
+## OpenSpec Workflow
+
+MaoMaoClub uses an OpenSpec-style specification-driven workflow for non-trivial
+development.
+
+- Project context: `openspec/project.md`
+- Accepted specs: `openspec/specs/`
+- Proposed changes: `openspec/changes/`
+- Workflow guide: `docs/open-spec-workflow.md`
+
+Before implementing gameplay, architecture, UI, save, input, build, testing, or
+tooling changes, create or update an OpenSpec change with a proposal, task list,
+and spec delta.

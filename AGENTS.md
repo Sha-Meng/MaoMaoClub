@@ -39,6 +39,7 @@ Engine upgrades require updating all of these files in the same change:
   workflow sources under `.claude/`.
 - Godot expertise: selected `gd-agentic-skills` skills under `.agents/skills/`,
   with `maomao-godot` as the project-specific entry point.
+- OpenSpec workflow: repository-local specifications under `openspec/`.
 
 For Godot-specific work, use `maomao-godot` first. It may route to:
 
@@ -54,6 +55,16 @@ For Godot-specific work, use `maomao-godot` first. It may route to:
 ## Collaboration Rules
 
 - Work from the repository root unless a task says otherwise.
+- Follow the OpenSpec workflow in `docs/open-spec-workflow.md` for non-trivial
+  design, gameplay, architecture, UI, content, save, build, testing, and tooling
+  changes.
+- Before implementation, read `openspec/project.md` and relevant files under
+  `openspec/specs/`.
+- For non-trivial changes, create or update an entry under
+  `openspec/changes/<change_id>/` with `proposal.md`, `tasks.md`, and spec deltas
+  before touching runtime code.
+- Keep accepted behavior in `openspec/specs/`; keep proposed behavior in
+  `openspec/changes/` until it is implemented and archived.
 - Keep changes scoped to the requested workflow or feature.
 - Prefer feature-based Godot organization over type-based folders.
 - Use typed GDScript and explicit return types for production code.
