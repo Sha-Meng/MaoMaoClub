@@ -4,8 +4,9 @@
 
 - Engine: Godot 4.6.3 stable
 - Exact build: 4.6.3.stable.official.7d41c59c4
-- Local binary: `/Users/mengsha/Downloads/Godot.app/Contents/MacOS/Godot`
-- Checked: 2026-06-10
+- Target OS: Windows only
+- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'
+- Checked: 2026-07-01 with `--headless --version`
 
 ## Policy
 

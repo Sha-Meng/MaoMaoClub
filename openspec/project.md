@@ -10,12 +10,19 @@ model are still to be defined in `design/`.
 
 - Engine: Godot 4.6.3 stable.
 - Exact build: 4.6.3.stable.official.7d41c59c4.
-- Local binary: `/Users/mengsha/Downloads/Godot.app/Contents/MacOS/Godot`.
+- Target OS: Windows only.
+- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'.
 - Language: typed GDScript 2.0 by default.
 - Production code uses explicit return types.
 - Files and folders use `snake_case`.
 - Godot node names use `PascalCase`.
 - Project organization is feature-based, not type-based.
+
+## 文档语言
+
+- 项目自有文档和 OpenSpec 材料默认且必须使用中文。
+- 这包括 proposal、tasks、design notes、specifications、production notes 和技术文档。
+- 外部上游引用、vendored skill 原文、API 名称、代码标识符和必须保留的英文术语，可以在翻译会降低准确性时保留原文。
 
 ## Development Workflow
 

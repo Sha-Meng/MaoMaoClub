@@ -13,7 +13,8 @@ This skill must use the MaoMaoClub pinned engine:
 
 - Engine: Godot 4.6.3 stable
 - Exact build: 4.6.3.stable.official.7d41c59c4
-- Local binary: `/Users/mengsha/Downloads/Godot.app/Contents/MacOS/Godot`
+- Target OS: Windows only
+- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'
 
 The `godot-builder` skill provides an expert-grade foundation for programmatic game development and headless automation using the Godot 4.6.3-stable CLI.
 

@@ -11,7 +11,8 @@ Use this skill for every Godot-specific task in MaoMaoClub.
 
 - Engine: Godot 4.6.3 stable
 - Exact build: 4.6.3.stable.official.7d41c59c4
-- Local binary: `/Users/mengsha/Downloads/Godot.app/Contents/MacOS/Godot`
+- Target OS: Windows only
+- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'
 - Version file: `.godot-version`
 
 All Godot choices must target this exact version unless the user explicitly
@@ -40,6 +41,12 @@ For production planning, GDDs, epics, stories, QA, release checklists, and team
 workflow, combine this skill with the Codex Game Studios skills in
 `.agents/skills/*` and canonical workflow sources in `.claude/skills/*`.
 
+## 文档语言
+
+- 项目自有文档和 OpenSpec 材料默认且必须使用中文。
+- 这包括 proposal、tasks、design notes、specifications、production notes 和技术文档。
+- 外部上游引用、vendored skill 原文、API 名称、代码标识符和必须保留的英文术语，可以在翻译会降低准确性时保留原文。
+
 ## Project Defaults
 
 - Organize code by feature, not by file type.
@@ -59,5 +66,5 @@ If the user asks to upgrade Godot:
 1. Confirm the target Godot version.
 2. Update `AGENTS.md`, `.godot-version`, `.agents/docs/godot-version.md`,
    `.agents/docs/technical-preferences.md`, this skill, and `godot-master`.
-3. Run the local Godot binary with `--version` if available.
+3. Run the configured Windows Godot executable with `--version` if available.
 4. Summarize compatibility risks before changing gameplay code.

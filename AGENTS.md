@@ -12,8 +12,9 @@ skill system.
 
 - Engine: Godot 4.6.3 stable
 - Exact build: 4.6.3.stable.official.7d41c59c4
-- Local binary: `/Users/mengsha/Downloads/Godot.app/Contents/MacOS/Godot`
-- Version source: `Godot --version`, checked on 2026-06-10
+- Target OS: Windows only
+- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'
+- Version source: `Godot --headless --version`, checked on 2026-07-01
 
 This is a hard project constraint. All game design, architecture, GDScript,
 scene construction, export planning, testing, and performance advice must target
@@ -51,6 +52,12 @@ For Godot-specific work, use `maomao-godot` first. It may route to:
 - `godot-testing-patterns` for test structure
 - `godot-performance-optimization` for profiling and frame-time work
 - `godot-export-builds` for release/export planning
+
+## 文档语言
+
+- 项目自有文档和 OpenSpec 材料默认且必须使用中文。
+- 这包括 proposal、tasks、design notes、specifications、production notes 和技术文档。
+- 外部上游引用、vendored skill 原文、API 名称、代码标识符和必须保留的英文术语，可以在翻译会降低准确性时保留原文。
 
 ## Collaboration Rules
 

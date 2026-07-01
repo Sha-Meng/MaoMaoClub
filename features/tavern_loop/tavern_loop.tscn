@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/tavern_loop/tavern_loop_controller.gd" id="1_loop"]
+
+[node name="TavernLoop" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 960.0
+offset_bottom = 360.0
+script = ExtResource("1_loop")
