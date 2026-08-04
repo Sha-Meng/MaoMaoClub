@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource path="res://features/particle_fluid_2d/demo/particle_fluid_demo.gd" type="Script" id="1"]
+
+[node name="ParticleFluidDemo" type="Node2D"]
+script = ExtResource("1")
