@@ -7,9 +7,9 @@ description: "Expert patterns for multi-platform exports including export templa
 
 ## MaoMaoClub Version Pin
 
-Plan exports for Godot 4.6.3 stable, exact build
-4.6.3.stable.official.7d41c59c4. Export presets, templates, CLI flags, and
-platform notes must be compatible with Godot 4.6.3 unless the user approves an
+Plan exports for Godot 4.7.1 stable, exact build
+4.7.1.stable.official.a13da4feb. Export presets, templates, CLI flags, and
+platform notes must be compatible with Godot 4.7.1 unless the user approves an
 engine upgrade.
 
 Expert guidance for building and distributing Godot games across platforms.

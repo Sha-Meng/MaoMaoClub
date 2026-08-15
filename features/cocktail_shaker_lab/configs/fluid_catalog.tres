@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="FluidCatalog" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/domain/fluid_catalog.gd" id="1_catalog"]
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/domain/fluid_config.gd" id="2_fluid"]
+[ext_resource type="Resource" path="res://features/cocktail_shaker_lab/configs/fluids/water.tres" id="3_water"]
+[ext_resource type="Resource" path="res://features/cocktail_shaker_lab/configs/fluids/amber_spirit.tres" id="4_amber"]
+
+[resource]
+script = ExtResource("1_catalog")
+fluids = Array[ExtResource("2_fluid")]([ExtResource("3_water"), ExtResource("4_amber")])

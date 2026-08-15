@@ -21,7 +21,7 @@ F_pressure_i = -sum_j m_i*m_j*(p_i/rho_i^2 + p_j/rho_j^2)*grad_W_ij
 - 2D 密度通过 `effective_depth_meters` 映射到等效三维体积。
 - 先确定粒子间距和 `smoothing_radius_meters`，再校准粒子质量使静水密度接近 `rest_density`。
 - `gas_stiffness` 作为体积模量，水预设按 `rest_density * speed_of_sound²` 校准；Tait 指数默认 7。
-- 增大 `gas_stiffness` 可降低压缩，但需要更小子步；测试场景的高 `dynamic_viscosity` 是粗网格有效数值黏性，不代表水的分子黏度。
+- 增大 `gas_stiffness` 可降低压缩，但需要更小子步；`dynamic_viscosity` 是粗网格有效数值黏性，不应直接照搬水的分子黏度。
 - 出现密度爆炸时，先降低外力/刚度或增加 `max_substeps`，不要直接提高速度上限。
 
 ## 光学混色
@@ -33,7 +33,52 @@ A = -ln(clamp(T_linear, epsilon, 1))
 T_out = exp(-A * optical_path_length)
 ```
 
-邻居按浓度成对交换吸光度，因此默认表现透明有色饮料的减色混合，而不是直接平均 sRGB。该模型是 RGB 三波段 Beer-Lambert 近似，不是完整光谱、折射或散射模拟。
+邻居按浓度成对交换吸光度，因此默认表现透明有色饮料的减色混合，而不是直接平均 sRGB。核心输运是 RGB 三波段近似，不是完整光谱模拟。
+
+## 可扩展液体材质
+
+`FluidMaterial2D` 用稳定的 `material_id` 描述一种液体。求解器注册材质时会校验并深复制资源；ID 0 永远作为兼容默认材质。粒子生成批次通过 `material_ids` 指定材质，未指定时继续使用 ID 0。
+
+材质参数分为三组：
+
+- 物理：`density_multiplier`、`viscosity_multiplier`；影响目标静止密度、压力、黏性和稳定子步。
+- 混合：`color_diffusion_multiplier`、`mixing_group`、`dye_strength`、`turbidity_multiplier`；影响吸光度、互溶关系和浑浊度。
+- 表现：`refractive_strength`、`specular_strength`；只进入渲染快照，不反向修改物理。
+
+只有材质确实改变物理或互溶参数时，求解器才进入多材质邻居循环；默认材质保留专用快速路径。新属性应优先添加到材质资源，并在粒子入场时缓存为状态派生值，避免每个邻居对做字典或 Resource 查询。
+
+## 光学场渲染
+
+`ParticleFluid2D` 默认使用 `OPTICAL_FIELD`：
+
+1. 一个低分辨率 HDR `SubViewport` 接收单次 `MultiMesh` 粒子 splat，累积 RGB 吸光度和有效厚度。
+2. 合成 Shader 用 Beer-Lambert 透射率生成透明液体颜色。
+3. 厚度梯度近似液面法线，并提供轻量屏幕空间折射、边缘高光和颜色阶梯化，保持 2D 像素风格。
+
+可通过以下属性控制成本或切回旧显示：
+
+```gdscript
+fluid.render_mode = ParticleFluid2D.RenderMode.OPTICAL_FIELD
+fluid.optical_field_resolution = Vector2i(160, 256)
+fluid.optical_surface_fill_scale = 2.20
+# 调试/低端回退：
+fluid.set_render_mode(ParticleFluid2D.RenderMode.DIRECT_PARTICLES)
+```
+
+光学场以重叠 splat 填补粗粒子之间的空隙；`optical_surface_fill_scale` 只扩大离屏覆盖，不增加物理粒子、节点或邻域计算。合成阶段还会在固定纹理采样预算内闭合被液体从两侧包围的小孔，并平滑内部颜色；只有单侧液体支撑的自由表面不会向外无限扩张。直接粒子模式保留离散圆片，供诊断粒子运动。合成同时加入有界的环境散射染色；纯 Beer-Lambert 透射在暗背景上没有足够入射光，会使有色液体近乎不可见。该散射项只提高暗场可读性，仍由累积厚度和浑浊度控制，不参与物理或颜色输运。
+
+该渲染是屏幕空间艺术化近似：它支持透明度、吸收、浑浊、轻量反射高光与折射扰动，但不模拟真实光谱、多次散射或三维焦散。物理快照与渲染完全解耦，关闭或切换渲染模式不会改变求解结果。
+
+验收实验室的普通酒液使用水感粗粒子预设：数值声速 `6.5 m/s`、基础动态黏度
+`4.0`、边界恢复系数 `0.0`、壁面摩擦 `0.05`。这些值是针对 0.20 m 粗粒子的交互
+近似，不是现实水的直接 SI 参数；糖浆和胶体继续通过材质倍率保持更高黏度。
+
+为消除低黏粗粒子在静置时由压力离散误差产生的持续抖动，配置可选择启用
+`quiescent_damping_per_second`。求解器只在无活动力场、容器与固体静止、平均粒子速度
+进入阈值并经过 `quiescent_activation_delay_seconds` 后施加指数阻尼；低于
+`quiescent_stop_speed` 的残余速度会归零。新外力、粒子增删或调用 `fluid.wake()` 会立即
+解除静稳态。实验室使用 `18 s⁻¹` 阻尼、`0.45 s` 延迟和 `0.04 m/s` 归零阈值；这不会
+改变默认核心配置，因为该功能默认关闭。
 
 ## 容器与外力
 
@@ -59,15 +104,29 @@ var fluid := ParticleFluid2D.new()
 fluid.config = ParticleFluidConfig2D.new()
 add_child(fluid)
 
+var red_wine := FluidMaterial2D.new()
+red_wine.material_id = 1
+red_wine.density_multiplier = 0.99
+red_wine.dye_strength = 1.3
+red_wine.refractive_strength = 0.7
+
+var syrup := FluidMaterial2D.new()
+syrup.material_id = 2
+syrup.viscosity_multiplier = 3.0
+syrup.turbidity_multiplier = 1.4
+var material_table: Array[FluidMaterial2D] = [red_wine, syrup]
+fluid.set_materials(material_table)
+
 var batch := ParticleSpawnBatch2D.new()
 batch.positions_meters = PackedVector2Array([Vector2(0.0, 0.0)])
 batch.colors_srgb = PackedColorArray([Color(0.2, 0.6, 1.0, 0.7)])
+batch.material_ids = PackedInt32Array([1])
 fluid.add_particles(batch)
 ```
 
-独立演示场景为 `res://features/particle_fluid_2d/demo/particle_fluid_demo.tscn`。F6 运行后可向杯子施加左右冲量或角冲量、触发有限生命周期的液体上冲力场，并切换冰块/重物质量。杯子运动由 `ContainerMotionAdapter2D` 转为纯数据快照。
+独立演示场景为 `res://features/particle_fluid_2d/demo/particle_fluid_demo.tscn`。F6 运行后会以 60 粒子交互档自动晃杯，可按 `1`–`6` 切换透明混色、黏度、密度、胶体、冰块和重物用例，并用 `B` 停止自动演示。杯子运动由 `ContainerMotionAdapter2D` 转为纯数据快照。
 
-推荐人工验收使用干净测试场景 `res://features/particle_fluid_2d/demo/particle_fluid_test_lab.tscn`。它不依赖主场景、业务模块、Autoload 或项目 InputMap，支持运行时调整杯子宽高，按升添加、选择、编辑和删除多种自定义粒子液体，并内置两色混合、运动容器、短时外力、冰块浮起、重物下沉、暂停和渲染解耦检查。默认性能配置为宽 2 m、高 4 m、红蓝各 120 L；0.20 m 粗粒子按约 4 L/粒子量化，总计约 60 个粒子；杯壁密度采样使用空间哈希近邻查询。
+推荐人工验收使用干净测试场景 `res://features/particle_fluid_2d/demo/particle_fluid_test_lab.tscn`。它不依赖主场景、业务模块、Autoload 或项目 InputMap，支持运行时调整杯子宽高，按升添加、选择、编辑和删除多种自定义粒子液体，并内置六个带操作步骤、通过条件和实时性能指标的测试用例。内置配置统一约 60 个粗粒子，硬上限为 136；杯壁密度采样使用空间哈希近邻查询。
 
 完整按键、预期现象和验收顺序见 `res://features/particle_fluid_2d/demo/TEST_GUIDE.md`。
 
@@ -86,4 +145,4 @@ Godot --headless --profiling --path . --script res://tests/particle_fluid_2d/run
 ```
 
 完整命令、硬件、性能门禁与结果记录见 `res://tests/particle_fluid_2d/TEST_EVIDENCE.md`。
-性能基线主档为 1,000 粒子，2,000 粒子仅作观测。第一版不包含 GPU Compute、连续液面网格、3D、软体或工程 CFD 精度。
+性能基线主档为 1,000 粒子，2,000 粒子仅作观测。当前版本不包含 GPU Compute、连续液面网格、3D、软体、完整光谱或工程 CFD 精度。

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="FluidConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/domain/fluid_config.gd" id="1_fluid"]
+
+[resource]
+script = ExtResource("1_fluid")
+fluid_id = 0
+fluid_name = "水（20°C）"
+description = "真实字段采用 20°C 附近参考值；粒子求解参数由相同 FluidId 的模拟配表提供。"
+alcohol_by_volume_percent = 0.0
+tags = PackedStringArray("water", "clear", "reference")
+reference_temperature_celsius = 20.0
+reference_density_kg_per_cubic_meter = 998.2
+reference_dynamic_viscosity_pascal_seconds = 0.001002
+reference_speed_of_sound_meters_per_second = 1482.0
+reference_refractive_index = 1.333

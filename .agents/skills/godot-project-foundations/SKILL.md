@@ -7,8 +7,8 @@ description: "Expert blueprint for Godot 4 project organization (feature-based f
 
 ## MaoMaoClub Version Pin
 
-Scaffold and review this project for Godot 4.6.3 stable, exact build
-4.6.3.stable.official.7d41c59c4. Do not introduce project settings,
+Scaffold and review this project for Godot 4.7.1 stable, exact build
+4.7.1.stable.official.a13da4feb. Do not introduce project settings,
 folder conventions, import assumptions, or CLI workflows that require a newer
 Godot version unless the user approves an upgrade.
 

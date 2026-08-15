@@ -22,21 +22,25 @@ static func solve(
 			continue
 		var density := 0.0
 		var fluid_velocity := Vector2.ZERO
+		var target_density_sum := 0.0
 		var weight_sum := 0.0
 		for particle_index: int in neighbors:
 			var distance := world_point.distance_to(state.positions[particle_index])
 			var weight := SphKernels2D.density_poly6(distance, config.smoothing_radius_meters)
 			density += state.masses[particle_index] * weight / config.effective_depth_meters
 			fluid_velocity += state.velocities[particle_index] * weight
+			target_density_sum += state.target_rest_densities[particle_index] * weight
 			weight_sum += weight
 		if weight_sum > 0.0:
 			fluid_velocity /= weight_sum
-		var coverage := smoothstep(config.rest_density * 0.1, config.rest_density * 0.8, density)
+			target_density_sum /= weight_sum
+		var local_target_density := maxf(target_density_sum, config.rest_density * 0.05)
+		var coverage := smoothstep(local_target_density * 0.1, local_target_density * 0.8, density)
 		if coverage <= 0.0:
 			continue
 		submersion_sum += coverage
 		var displaced_volume := areas[sample_index] * body.effective_depth_meters * coverage
-		var effective_density := clampf(density, 0.0, config.rest_density * 1.2)
+		var effective_density := clampf(density, 0.0, local_target_density * 1.2)
 		var buoyancy_force := -config.gravity_meters_per_second_squared * effective_density * displaced_volume
 		var relative_velocity := fluid_velocity - body.point_velocity_world(local_point)
 		var drag_force := relative_velocity * body.drag_coefficient * effective_density * displaced_volume

@@ -4,11 +4,13 @@ class_name ContainerShape2D
 var segment_starts_local_meters: PackedVector2Array = PackedVector2Array()
 var segment_ends_local_meters: PackedVector2Array = PackedVector2Array()
 var inward_normals_local: PackedVector2Array = PackedVector2Array()
+var is_closed: bool = false
 
 func clear() -> void:
 	segment_starts_local_meters.clear()
 	segment_ends_local_meters.clear()
 	inward_normals_local.clear()
+	is_closed = false
 
 func segment_count() -> int:
 	return segment_starts_local_meters.size()
@@ -43,6 +45,7 @@ func configure_convex_polygon(points: PackedVector2Array) -> void:
 		if normal.dot(centroid - (start + end) * 0.5) < 0.0:
 			normal = -normal
 		add_segment(start, end, normal)
+	is_closed = true
 
 func validate() -> PackedStringArray:
 	var errors := PackedStringArray()

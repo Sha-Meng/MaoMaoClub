@@ -7,9 +7,9 @@ description: "Expert blueprint for performance profiling and optimization (frame
 
 ## MaoMaoClub Version Pin
 
-Profile and optimize for Godot 4.6.3 stable, exact build
-4.6.3.stable.official.7d41c59c4. Use profiler, rendering, physics, memory, and
-threading behavior compatible with Godot 4.6.3.
+Profile and optimize for Godot 4.7.1 stable, exact build
+4.7.1.stable.official.a13da4feb. Use profiler, rendering, physics, memory, and
+threading behavior compatible with Godot 4.7.1.
 
 Profiler-driven analysis, object pooling, and visibility culling define optimized game performance.
 

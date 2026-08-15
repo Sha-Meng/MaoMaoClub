@@ -5,16 +5,16 @@ technical preference source.
 
 ## Engine & Language
 
-- Engine: Godot 4.6.3 stable
-- Engine exact build: 4.6.3.stable.official.7d41c59c4
+- Engine: Godot 4.7.1 stable
+- Engine exact build: 4.7.1.stable.official.a13da4feb
 - Engine version policy: pinned. Do not target another Godot version unless the
   user explicitly approves an upgrade.
 - Target OS: Windows only
-- Local Godot binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'
+- Local Godot binary: 'D:\Godot_v4.7.1-stable_win64.exe\Godot_v4.7.1-stable_win64.exe'
 - Language: GDScript 2.0, typed by default
-- Rendering: Godot 4.6.3 rendering APIs only; choose Forward+ / Mobile /
+- Rendering: Godot 4.7.1 rendering APIs only; choose Forward+ / Mobile /
   Compatibility after platform decisions
-- Physics: Godot 4.6.3 built-in physics, with fixed timestep decisions recorded
+- Physics: Godot 4.7.1 built-in physics, with fixed timestep decisions recorded
   in ADRs
 
 ## 文档语言
@@ -71,7 +71,7 @@ technical preference source.
 
 ## Forbidden Patterns
 
-- Do not use APIs or workflows that require a Godot version newer than 4.6.3
+- Do not use APIs or workflows that require a Godot version newer than 4.7.1
   unless the user approves an engine upgrade.
 - Do not commit `.godot/`, imported cache files, editor-local state, or secrets.
 - Do not mix type-based project structure into production code; prefer

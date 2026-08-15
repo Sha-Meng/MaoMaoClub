@@ -5,14 +5,14 @@
 Codex Game Studios adapter 文件由 `python3 tools/sync_codex_adapters.py` 生成。
 canonical source 仍然在 `.claude/skills/*/SKILL.md`。
 
-MaoMaoClub 额外加入了项目级 Godot skills，均受 Godot 4.6.3 stable 版本约束。
+MaoMaoClub 额外加入了项目级 Godot skills，均受 Godot 4.7.1 stable 版本约束。
 
 总数：83
 
 ## MaoMaoClub Godot Skills
 
-- `maomao-godot`: Project-specific Godot entry point. Enforces Godot 4.6.3 stable before routing to other Godot skills.
-- `godot-master`: Vendored gd-agentic-skills Godot architecture hub, pinned to Godot 4.6.3 for this project.
+- `maomao-godot`: Project-specific Godot entry point. Enforces Godot 4.7.1 stable before routing to other Godot skills.
+- `godot-master`: Vendored gd-agentic-skills Godot architecture hub, pinned to Godot 4.7.1 for this project.
 - `godot-project-foundations`: Project layout, naming, and Godot repository hygiene.
 - `godot-gdscript-mastery`: Typed GDScript and code style guidance.
 - `godot-builder`: Godot CLI, scene, import, and export automation.

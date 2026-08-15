@@ -10,6 +10,7 @@ var minimum_density: float = INF
 var total_linear_momentum: Vector2 = Vector2.ZERO
 var kinetic_energy: float = 0.0
 var maximum_speed: float = 0.0
+var quiescent_damping_active: bool = false
 var substeps: int = 0
 var average_neighbor_count: float = 0.0
 var applied_external_acceleration: Vector2 = Vector2.ZERO

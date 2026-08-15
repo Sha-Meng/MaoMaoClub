@@ -8,10 +8,10 @@ model are still to be defined in `design/`.
 
 ## Hard Constraints
 
-- Engine: Godot 4.6.3 stable.
-- Exact build: 4.6.3.stable.official.7d41c59c4.
+- Engine: Godot 4.7.1 stable.
+- Exact build: 4.7.1.stable.official.a13da4feb.
 - Target OS: Windows only.
-- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'.
+- Local binary: 'D:\Godot_v4.7.1-stable_win64.exe\Godot_v4.7.1-stable_win64.exe'.
 - Language: typed GDScript 2.0 by default.
 - Production code uses explicit return types.
 - Files and folders use `snake_case`.

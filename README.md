@@ -5,8 +5,8 @@ development.
 
 ## Engine
 
-- Godot 4.6.3 stable
-- Exact build: 4.6.3.stable.official.7d41c59c4
+- Godot 4.7.1 stable
+- Exact build: 4.7.1.stable.official.a13da4feb
 
 The pinned engine version is defined in `AGENTS.md`, `.godot-version`, and
 `.agents/docs/godot-version.md`.

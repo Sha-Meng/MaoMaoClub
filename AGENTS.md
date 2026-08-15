@@ -10,19 +10,19 @@ skill system.
 
 ## Pinned Engine Version
 
-- Engine: Godot 4.6.3 stable
-- Exact build: 4.6.3.stable.official.7d41c59c4
+- Engine: Godot 4.7.1 stable
+- Exact build: 4.7.1.stable.official.a13da4feb
 - Target OS: Windows only
-- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'
-- Version source: `Godot --headless --version`, checked on 2026-07-01
+- Local binary: 'D:\Godot_v4.7.1-stable_win64.exe\Godot_v4.7.1-stable_win64.exe'
+- Version source: `Godot --version`, checked on 2026-08-08
 
 This is a hard project constraint. All game design, architecture, GDScript,
 scene construction, export planning, testing, and performance advice must target
-Godot 4.6.3 stable unless the user explicitly approves an engine upgrade.
+Godot 4.7.1 stable unless the user explicitly approves an engine upgrade.
 
 If any vendored skill, upstream documentation, or general model knowledge
 mentions a different Godot version, prefer the pinned version above. Before
-using APIs or behavior introduced after Godot 4.6.3, stop and verify
+using APIs or behavior introduced after Godot 4.7.1, stop and verify
 compatibility or ask the user.
 
 Engine upgrades require updating all of these files in the same change:

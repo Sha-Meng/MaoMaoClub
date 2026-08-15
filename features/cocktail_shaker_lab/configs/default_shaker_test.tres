@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="ShakerTestConfig2D" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/config/shaker_vessel_config_2d.gd" id="1_vessel"]
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/config/shaker_motion_config_2d.gd" id="2_motion"]
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/config/shaker_ice_config_2d.gd" id="3_ice"]
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/config/shaker_test_config_2d.gd" id="4_test"]
+[ext_resource type="Resource" path="res://features/cocktail_shaker_lab/configs/fluid_catalog.tres" id="5_catalog"]
+[ext_resource type="Resource" path="res://features/cocktail_shaker_lab/configs/particle_simulation_table.tres" id="6_table"]
+
+[sub_resource type="Resource" id="ShakerVessel_default"]
+script = ExtResource("1_vessel")
+width_meters = 0.72
+height_meters = 1.3
+wall_thickness_pixels = 12.0
+lid_enabled = false
+home_position_pixels = Vector2(760, 150)
+manual_horizontal_limit_pixels = 135.0
+collision_layer = 1
+collision_mask = 2
+
+[sub_resource type="Resource" id="ShakerMotion_default"]
+script = ExtResource("2_motion")
+mouse_sensitivity = 1.15
+maximum_offset_pixels = Vector2(135, 90)
+maximum_rotation_radians = 0.28
+follow_speed_per_second = 18.0
+release_return_speed_per_second = 8.0
+reset_speed_per_second = 22.0
+require_left_mouse_button = true
+settling_duration_seconds = 1.6
+settling_fluid_damping_per_second = 24.0
+settling_fluid_stop_speed_meters_per_second = 0.035
+settling_ice_linear_damping_per_second = 32.0
+settling_ice_angular_damping_per_second = 24.0
+settling_ice_stop_speed_pixels_per_second = 2.0
+settling_ice_stop_angular_speed = 0.08
+
+[sub_resource type="Resource" id="ShakerIce_default"]
+script = ExtResource("3_ice")
+enabled = true
+maximum_count = 3
+size_meters = Vector2(0.16, 0.11)
+density_kg_per_cubic_meter = 917.0
+sample_spacing_meters = 0.055
+drag_coefficient = 3.6
+maximum_fluid_force = 14.0
+linear_damp_per_second = 0.12
+angular_damp_per_second = 0.18
+collision_friction = 0.08
+collision_bounce = 0.24
+containment_restitution = 0.38
+containment_tangent_retention = 0.94
+gap_meters = 0.035
+color = Color(0.72, 0.91, 1, 0.92)
+outline_color = Color(0.9, 0.98, 1, 1)
+collision_layer = 2
+collision_mask = 3
+
+[resource]
+script = ExtResource("4_test")
+fluid_catalog = ExtResource("5_catalog")
+particle_simulation_table = ExtResource("6_table")
+vessel = SubResource("ShakerVessel_default")
+motion = SubResource("ShakerMotion_default")
+ice = SubResource("ShakerIce_default")
+particle_spacing_meters = 0.055
+maximum_particles = 120
+render_mode = 0
+optical_field_resolution = Vector2i(96, 144)
+optical_surface_fill_scale = 2.8
+rendering_enabled = true
+start_paused = false
+random_seed = 20260815

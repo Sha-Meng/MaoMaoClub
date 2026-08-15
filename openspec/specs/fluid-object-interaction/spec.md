@@ -73,7 +73,7 @@ TBD - created by archiving change add-2d-sph-particle-fluid. Update Purpose afte
 - **THEN** 对象冲量与粒子总反冲量之和在数值容差内为零
 
 ### Requirement: 刚体适配遵守 Godot 物理阶段
-Godot 适配层 SHALL 在 Godot 4.6.3 的物理阶段读取刚体运动状态并安全施加求解结果。适配层 MUST 不在普通 `_process` 中直接覆写 RigidBody2D 状态；禁用或移除适配器后，数值核心 SHALL 可以继续在 headless 环境独立测试。
+Godot 适配层 SHALL 在 Godot 4.7.1 的物理阶段读取刚体运动状态并安全施加求解结果。适配层 MUST 不在普通 `_process` 中直接覆写 RigidBody2D 状态；禁用或移除适配器后，数值核心 SHALL 可以继续在 headless 环境独立测试。
 
 #### Scenario: 对 RigidBody2D 应用流体力
 - **WHEN** 适配器在物理 tick 收到某对象 ID 的有限力和扭矩结果

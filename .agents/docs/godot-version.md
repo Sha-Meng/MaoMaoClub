@@ -2,19 +2,19 @@
 
 ## Current Version
 
-- Engine: Godot 4.6.3 stable
-- Exact build: 4.6.3.stable.official.7d41c59c4
+- Engine: Godot 4.7.1 stable
+- Exact build: 4.7.1.stable.official.a13da4feb
 - Target OS: Windows only
-- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'
-- Checked: 2026-07-01 with `--headless --version`
+- Local binary: 'D:\Godot_v4.7.1-stable_win64.exe\Godot_v4.7.1-stable_win64.exe'
+- Checked: 2026-08-08 with `--version`
 
 ## Policy
 
 All design, implementation, testing, export, and performance guidance for this
-project must target Godot 4.6.3 stable.
+project must target Godot 4.7.1 stable.
 
 If a skill or external reference mentions a different Godot version, treat it as
-secondary context. Adapt it to Godot 4.6.3, verify compatibility, or ask the
+secondary context. Adapt it to Godot 4.7.1, verify compatibility, or ask the
 user before relying on version-specific behavior.
 
 Do not upgrade the target Godot version unless the user explicitly approves the

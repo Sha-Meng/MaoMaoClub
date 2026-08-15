@@ -18,5 +18,5 @@
 ## Project Adaptation
 
 - Project Godot entry skill: `.agents/skills/maomao-godot/SKILL.md`
-- Pinned engine: Godot 4.6.3 stable
-- Exact build: 4.6.3.stable.official.7d41c59c4
+- Pinned engine: Godot 4.7.1 stable
+- Exact build: 4.7.1.stable.official.a13da4feb

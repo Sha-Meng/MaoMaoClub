@@ -3,6 +3,9 @@ class_name ParticleFluidTestLab
 
 enum Scenario {
 	MIXING,
+	VISCOSITY,
+	DENSITY,
+	COLLOID,
 	ICE,
 	HEAVY,
 	CUSTOM,
@@ -20,10 +23,21 @@ const WALL_THICKNESS_PIXELS: float = 18.0
 const PARTICLE_SPACING_METERS: float = 0.20
 const EFFECTIVE_DEPTH_METERS: float = 0.10
 const SMOOTHING_RADIUS_RATIO: float = 1.9
+const WATER_NUMERICAL_SOUND_SPEED: float = 6.5
+const WATER_BASE_VISCOSITY: float = 4.0
+const WATER_BOUNDARY_RESTITUTION: float = 0.0
+const WATER_BOUNDARY_FRICTION: float = 0.05
+const WATER_QUIESCENT_DAMPING_PER_SECOND: float = 18.0
+const WATER_QUIESCENT_ACTIVATION_DELAY_SECONDS: float = 0.45
+const WATER_QUIESCENT_STOP_SPEED: float = 0.04
 const FLUID_MARGIN_METERS: float = PARTICLE_SPACING_METERS * 0.5
 const DEFAULT_LIQUID_VOLUME_LITERS: float = 120.0
 const ICE_MASS_KILOGRAMS: float = 7.0
 const HEAVY_MASS_KILOGRAMS: float = 24.0
+const MAX_INTERACTIVE_PARTICLES: int = 136
+const AUTO_ACTION_INTERVAL_SECONDS: float = 1.8
+const TEST_WINDOW_SIZE: Vector2i = Vector2i(1200, 700)
+const TEST_CASE_COUNT: int = 6
 
 var _fluid: ParticleFluid2D
 var _cup: AnimatableBody2D
@@ -34,6 +48,7 @@ var _scenario_label: Label
 var _objective_label: Label
 var _metrics_label: Label
 var _health_label: Label
+var _criteria_label: Label
 var _cup_width_spin: SpinBox
 var _cup_height_spin: SpinBox
 var _fluid_color_picker: ColorPickerButton
@@ -53,8 +68,15 @@ var _fluid_recipes: Array[ParticleFluidTestRecipe2D] = []
 var _cup_velocity_pixels_per_second: Vector2 = Vector2.ZERO
 var _cup_angular_velocity_radians_per_second: float = 0.0
 var _rendering_enabled: bool = true
+var _auto_demo_enabled: bool = false
+var _auto_demo_elapsed_seconds: float = 0.0
+var _auto_demo_direction: float = 1.0
 
 func _ready() -> void:
+	var window := get_window()
+	if window.size.x < TEST_WINDOW_SIZE.x or window.size.y < TEST_WINDOW_SIZE.y:
+		window.size = TEST_WINDOW_SIZE
+	window.min_size = TEST_WINDOW_SIZE
 	_build_container()
 	_build_fluid()
 	_build_body()
@@ -65,8 +87,18 @@ func _ready() -> void:
 	queue_redraw()
 
 func _physics_process(delta: float) -> void:
+	if _auto_demo_enabled:
+		_auto_demo_elapsed_seconds += delta
+		if _auto_demo_elapsed_seconds >= AUTO_ACTION_INTERVAL_SECONDS:
+			_auto_demo_elapsed_seconds = 0.0
+			_apply_cup_impulse(170.0 * _auto_demo_direction)
+			_auto_demo_direction *= -1.0
+			if _auto_demo_direction > 0.0:
+				_apply_fluid_impulse()
 	var horizontal_input := float(Input.is_physical_key_pressed(KEY_D)) - float(Input.is_physical_key_pressed(KEY_A))
 	var angular_input := float(Input.is_physical_key_pressed(KEY_E)) - float(Input.is_physical_key_pressed(KEY_Q))
+	if not is_zero_approx(horizontal_input) or not is_zero_approx(angular_input):
+		_fluid.wake()
 	_cup_velocity_pixels_per_second.x += horizontal_input * 520.0 * delta
 	_cup_angular_velocity_radians_per_second += angular_input * 2.4 * delta
 	_cup_velocity_pixels_per_second.x = clampf(_cup_velocity_pixels_per_second.x, -320.0, 320.0)
@@ -91,8 +123,14 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		KEY_1:
 			_load_scenario(Scenario.MIXING)
 		KEY_2:
-			_load_scenario(Scenario.ICE)
+			_load_scenario(Scenario.VISCOSITY)
 		KEY_3:
+			_load_scenario(Scenario.DENSITY)
+		KEY_4:
+			_load_scenario(Scenario.COLLOID)
+		KEY_5:
+			_load_scenario(Scenario.ICE)
+		KEY_6:
 			_load_scenario(Scenario.HEAVY)
 		KEY_R:
 			_load_scenario(_scenario)
@@ -102,6 +140,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		KEY_V:
 			_rendering_enabled = not _rendering_enabled
 			_fluid.set_rendering_enabled(_rendering_enabled)
+		KEY_M:
+			_toggle_render_mode()
+		KEY_B:
+			_toggle_auto_demo()
 		KEY_SPACE:
 			_apply_fluid_impulse()
 
@@ -142,11 +184,136 @@ func _run_headless_smoke() -> void:
 	if _fluid.get_state_snapshot().count() != 45:
 		push_error("Particle fluid lab smoke: solver particle count does not match volume recipes")
 		failed = true
+	for test_case: int in range(TEST_CASE_COUNT):
+		_load_scenario(test_case)
+		await get_tree().physics_frame
+		var snapshot := _fluid.get_state_snapshot()
+		var expected_recipe_count := 1 if test_case == Scenario.ICE or test_case == Scenario.HEAVY else 2
+		if _fluid_recipes.size() != expected_recipe_count:
+			push_error("Particle fluid lab smoke: case %d recipe count mismatch" % test_case)
+			failed = true
+		if snapshot.count() <= 0 or snapshot.count() > MAX_INTERACTIVE_PARTICLES:
+			push_error("Particle fluid lab smoke: case %d violates particle budget with %d" % [test_case, snapshot.count()])
+			failed = true
+		var expected_material_ids: Dictionary = {}
+		for recipe: ParticleFluidTestRecipe2D in _fluid_recipes:
+			expected_material_ids[recipe.material_id] = true
+		for material_id: int in snapshot.material_ids:
+			if not expected_material_ids.has(material_id):
+				push_error("Particle fluid lab smoke: case %d spawned unexpected material %d" % [test_case, material_id])
+				failed = true
+		if _objective_label.text.is_empty() or _criteria_label.text.is_empty():
+			push_error("Particle fluid lab smoke: case %d lacks visible guidance" % test_case)
+			failed = true
+		print("LAB_CASE id=%d particles=%d recipes=%d materials=%d" % [
+			test_case,
+			snapshot.count(),
+			_fluid_recipes.size(),
+			expected_material_ids.size(),
+		])
+	_cup_width_meters = DEFAULT_CUP_WIDTH_METERS
+	_cup_height_meters = DEFAULT_CUP_HEIGHT_METERS
+	_rebuild_cup_geometry()
+	_load_scenario(Scenario.MIXING)
+	for _frame: int in range(90):
+		await get_tree().physics_frame
+	var water_baseline := _fluid.get_state_snapshot()
+	var baseline_mean_speed := _snapshot_mean_speed(water_baseline)
+	var baseline_maximum_speed := _snapshot_maximum_speed(water_baseline)
+	if baseline_mean_speed > 0.02 or baseline_maximum_speed > 0.08:
+		push_error("Particle fluid lab smoke: static water did not converge before dynamic response")
+		failed = true
+	_apply_fluid_impulse()
+	var peak_mean_speed := 0.0
+	var peak_relative_speed := 0.0
+	var peak_pressure := 0.0
+	var damping_disabled_during_impulse := false
+	for _frame: int in range(120):
+		await get_tree().physics_frame
+		var response_snapshot := _fluid.get_state_snapshot()
+		peak_mean_speed = maxf(peak_mean_speed, _snapshot_mean_speed(response_snapshot))
+		peak_relative_speed = maxf(
+			peak_relative_speed,
+			_snapshot_relative_speed(response_snapshot)
+		)
+		peak_pressure = maxf(peak_pressure, _snapshot_maximum_pressure(response_snapshot))
+		if not _fluid.is_quiescent_damping_active():
+			damping_disabled_during_impulse = true
+	var final_mean_speed := _snapshot_mean_speed(_fluid.get_state_snapshot())
+	if peak_mean_speed < 0.8 or peak_relative_speed < 0.5:
+		push_error("Particle fluid lab smoke: water preset moves as an over-damped rigid clump")
+		failed = true
+	if peak_pressure > 800000.0:
+		push_error("Particle fluid lab smoke: water preset pressure response is too elastic")
+		failed = true
+	if not damping_disabled_during_impulse:
+		push_error("Particle fluid lab smoke: active force did not wake quiescent damping")
+		failed = true
+	if final_mean_speed > 0.05:
+		push_error("Particle fluid lab smoke: water did not return to rest after impulse")
+		failed = true
+	print("LAB_WATER_RESPONSE peak_mean=%.4f relative_speed=%.4f peak_pressure=%.2f final_mean=%.6f" % [
+		peak_mean_speed,
+		peak_relative_speed,
+		peak_pressure,
+		final_mean_speed,
+	])
+	var initial_render_mode := _fluid.render_mode
+	_toggle_render_mode()
+	if _fluid.render_mode == initial_render_mode:
+		push_error("Particle fluid lab smoke: render mode did not toggle")
+		failed = true
+	_toggle_render_mode()
+	set_auto_demo_enabled(true)
+	if not _auto_demo_enabled:
+		push_error("Particle fluid lab smoke: auto demo did not enable")
+		failed = true
+	set_auto_demo_enabled(false)
 	get_tree().quit(1 if failed else 0)
+
+func _snapshot_mean_velocity(snapshot: ParticleFluidSnapshot2D) -> Vector2:
+	var total := Vector2.ZERO
+	for velocity: Vector2 in snapshot.velocities_meters_per_second:
+		total += velocity
+	return total / float(maxi(snapshot.count(), 1))
+
+func _snapshot_relative_speed(snapshot: ParticleFluidSnapshot2D) -> float:
+	var mean_velocity := _snapshot_mean_velocity(snapshot)
+	var total := 0.0
+	for velocity: Vector2 in snapshot.velocities_meters_per_second:
+		total += (velocity - mean_velocity).length()
+	return total / float(maxi(snapshot.count(), 1))
+
+func _snapshot_mean_speed(snapshot: ParticleFluidSnapshot2D) -> float:
+	var total := 0.0
+	for velocity: Vector2 in snapshot.velocities_meters_per_second:
+		total += velocity.length()
+	return total / float(maxi(snapshot.count(), 1))
+
+func _snapshot_maximum_speed(snapshot: ParticleFluidSnapshot2D) -> float:
+	var maximum := 0.0
+	for velocity: Vector2 in snapshot.velocities_meters_per_second:
+		maximum = maxf(maximum, velocity.length())
+	return maximum
+
+func _snapshot_maximum_pressure(snapshot: ParticleFluidSnapshot2D) -> float:
+	var maximum := 0.0
+	for pressure: float in snapshot.pressures:
+		maximum = maxf(maximum, pressure)
+	return maximum
 
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, get_viewport_rect().size), Color(0.035, 0.047, 0.067), true)
 	draw_rect(Rect2(Vector2(425.0, 66.0), Vector2(690.0, 505.0)), Color(0.055, 0.075, 0.105), true)
+	for x_position: int in range(450, 1116, 40):
+		draw_line(
+			Vector2(float(x_position), 76.0),
+			Vector2(float(x_position), 561.0),
+			Color(0.10, 0.14, 0.19),
+			1.0
+		)
+	for y_position: int in range(90, 562, 40):
+		draw_line(Vector2(440.0, float(y_position)), Vector2(1105.0, float(y_position)), Color(0.10, 0.14, 0.19), 1.0)
 	if _container_adapter == null or _container_adapter.container_shape == null:
 		return
 	var shape := _container_adapter.container_shape
@@ -230,19 +397,26 @@ func _build_fluid() -> void:
 	fluid_config.effective_depth_meters = EFFECTIVE_DEPTH_METERS
 	fluid_config.smoothing_radius_meters = PARTICLE_SPACING_METERS * SMOOTHING_RADIUS_RATIO
 	fluid_config.particle_mass = 1000.0 * fluid_config.effective_depth_meters * PARTICLE_SPACING_METERS * PARTICLE_SPACING_METERS
-	fluid_config.speed_of_sound = 12.0
+	fluid_config.speed_of_sound = WATER_NUMERICAL_SOUND_SPEED
 	fluid_config.gas_stiffness = (
 		fluid_config.rest_density
 		* fluid_config.speed_of_sound
 		* fluid_config.speed_of_sound
 	)
-	# 粗粒子预设使用有效数值黏性耗散网格尺度振荡；静止密度仍为 1000 kg/m³。
-	fluid_config.dynamic_viscosity = 50.0
+	# 低精度粗粒子使用少量数值黏性维持稳定，但普通酒液应保留水一样的层间滑动。
+	fluid_config.dynamic_viscosity = WATER_BASE_VISCOSITY
+	fluid_config.boundary_restitution = WATER_BOUNDARY_RESTITUTION
+	fluid_config.boundary_friction = WATER_BOUNDARY_FRICTION
+	fluid_config.quiescent_damping_per_second = WATER_QUIESCENT_DAMPING_PER_SECOND
+	fluid_config.quiescent_activation_delay_seconds = WATER_QUIESCENT_ACTIVATION_DELAY_SECONDS
+	fluid_config.quiescent_stop_speed = WATER_QUIESCENT_STOP_SPEED
 	fluid_config.color_diffusion = 0.9
 	fluid_config.optical_path_length = 1.0
 	fluid_config.max_substeps = 8
 	fluid_config.density_error_warning_ratio = 0.75
+	fluid_config.enable_step_profiling = true
 	_fluid.config = fluid_config
+	_fluid.optical_field_resolution = Vector2i(128, 192)
 	add_child(_fluid)
 	_fluid.set_container_adapter(_container_adapter)
 	_fluid.step_completed.connect(_on_step_completed)
@@ -328,12 +502,20 @@ func _build_acceptance_page(content: VBoxContainer) -> void:
 	_objective_label.custom_minimum_size.y = 68.0
 	_objective_label.add_theme_color_override("font_color", Color(0.72, 0.8, 0.9))
 	content.add_child(_objective_label)
+	_criteria_label = Label.new()
+	_criteria_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_criteria_label.custom_minimum_size.y = 92.0
+	_criteria_label.add_theme_color_override("font_color", Color(0.78, 0.88, 0.72))
+	content.add_child(_criteria_label)
 	var scenario_grid := GridContainer.new()
 	scenario_grid.columns = 2
 	content.add_child(scenario_grid)
-	_add_button(scenario_grid, "1  两色混合", func() -> void: _load_scenario(Scenario.MIXING))
-	_add_button(scenario_grid, "2  冰块浮起", func() -> void: _load_scenario(Scenario.ICE))
-	_add_button(scenario_grid, "3  重物下沉", func() -> void: _load_scenario(Scenario.HEAVY))
+	_add_button(scenario_grid, "1  透明混色", func() -> void: _load_scenario(Scenario.MIXING))
+	_add_button(scenario_grid, "2  黏度对比", func() -> void: _load_scenario(Scenario.VISCOSITY))
+	_add_button(scenario_grid, "3  密度分层", func() -> void: _load_scenario(Scenario.DENSITY))
+	_add_button(scenario_grid, "4  胶体浑浊", func() -> void: _load_scenario(Scenario.COLLOID))
+	_add_button(scenario_grid, "5  冰块浮起", func() -> void: _load_scenario(Scenario.ICE))
+	_add_button(scenario_grid, "6  重物下沉", func() -> void: _load_scenario(Scenario.HEAVY))
 	_add_button(scenario_grid, "R  重置当前", _reset_runtime_from_recipes)
 	var action_grid := GridContainer.new()
 	action_grid.columns = 2
@@ -347,10 +529,12 @@ func _build_acceptance_page(content: VBoxContainer) -> void:
 		_fluid.simulate = not _fluid.simulate
 		_update_scenario_label()
 	)
+	_add_button(action_grid, "B  自动演示", _toggle_auto_demo)
+	_add_button(action_grid, "M  切换渲染", _toggle_render_mode)
 	var separator := HSeparator.new()
 	content.add_child(separator)
 	var operation := Label.new()
-	operation.text = "操作：按住 A/D 平移杯子，按住 Q/E 倾斜；杯口开放，持续倾斜可观察溢出。V 隐藏/显示粒子，便于确认物理模拟不依赖渲染。"
+	operation.text = "操作：1–6 选择用例；A/D 晃杯，Q/E 倾斜，Space 上冲；B 自动演示，M 切换光学场/直接粒子，V 隐藏渲染，P 暂停。"
 	operation.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	operation.custom_minimum_size.y = 76.0
 	content.add_child(operation)
@@ -362,11 +546,11 @@ func _build_acceptance_page(content: VBoxContainer) -> void:
 	_health_label = Label.new()
 	_health_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	content.add_child(_health_label)
-	var checklist := Label.new()
-	checklist.text = "验收要点\n• 混色接触区逐渐形成更深的减色结果\n• 杯子加速时流体滞后，停止后回荡并耗散\n• 连续加液时总体积和液位上升；杯口允许溢出\n• 冰块部分浸没并浮起，重物最终下沉"
-	checklist.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	checklist.add_theme_color_override("font_color", Color(0.78, 0.86, 0.72))
-	content.add_child(checklist)
+	var hint := Label.new()
+	hint.text = "绿色表示数值健康；黄色是软诊断；红色或粒子数超过 136 才算自动失败。每个用例的具体步骤与通过条件显示在上方。"
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.add_theme_color_override("font_color", Color(0.70, 0.78, 0.88))
+	content.add_child(hint)
 
 func _build_configuration_page(content: VBoxContainer) -> void:
 	var cup_heading := Label.new()
@@ -480,21 +664,44 @@ func _add_button(parent: Control, label_text: String, callback: Callable) -> voi
 func _load_scenario(new_scenario: int) -> void:
 	_scenario = new_scenario
 	var capacity_liters := _volume_capacity_for_size(_cup_width_meters, _cup_height_meters)
+	if _scenario != Scenario.CUSTOM:
+		_fluid_recipes.clear()
 	match _scenario:
 		Scenario.MIXING:
-			_fluid_recipes.clear()
 			var per_color_liters := minf(DEFAULT_LIQUID_VOLUME_LITERS, capacity_liters * 0.5)
-			_fluid_recipes.append(_make_recipe("红色液体", per_color_liters, Color(0.96, 0.22, 0.12, 0.78), 1.0, 0.78))
-			_fluid_recipes.append(_make_recipe("蓝色液体", per_color_liters, Color(0.12, 0.36, 0.98, 0.78), 1.0, 0.78))
+			var red := _make_recipe("红色基酒", per_color_liters, Color(0.96, 0.22, 0.12, 0.66), 1.0, 0.35)
+			_set_recipe_material(red, 1, 0.98, 0.85, 1.0, 0, 1.25, 0.9, 0.55, 0.45)
+			var blue := _make_recipe("蓝色基酒", per_color_liters, Color(0.12, 0.36, 0.98, 0.66), 1.0, 0.35)
+			_set_recipe_material(blue, 2, 1.03, 1.15, 1.0, 0, 0.85, 0.9, 0.25, 0.20)
+			_fluid_recipes.assign([red, blue])
+		Scenario.VISCOSITY:
+			var thin := _make_recipe("低黏基酒", DEFAULT_LIQUID_VOLUME_LITERS, Color(0.98, 0.64, 0.12, 0.70), 1.0, 0.25)
+			_set_recipe_material(thin, 10, 1.0, 0.35, 0.0, 1, 1.0, 0.8, 0.40, 0.35)
+			var syrup := _make_recipe("高黏糖浆", DEFAULT_LIQUID_VOLUME_LITERS, Color(0.62, 0.18, 0.88, 0.76), 1.0, 0.55)
+			_set_recipe_material(syrup, 11, 1.0, 4.0, 0.0, 2, 1.2, 1.2, 0.30, 0.55)
+			_fluid_recipes.assign([thin, syrup])
+		Scenario.DENSITY:
+			var light := _make_recipe("低密度液体", DEFAULT_LIQUID_VOLUME_LITERS, Color(0.98, 0.78, 0.22, 0.66), 1.0, 0.25)
+			_set_recipe_material(light, 20, 0.88, 1.0, 0.0, 3, 0.9, 0.8, 0.28, 0.30)
+			var dense := _make_recipe("高密度液体", DEFAULT_LIQUID_VOLUME_LITERS, Color(0.10, 0.72, 0.92, 0.72), 1.0, 0.35)
+			_set_recipe_material(dense, 21, 1.12, 1.0, 0.0, 4, 1.0, 1.0, 0.38, 0.35)
+			_fluid_recipes.assign([light, dense])
+		Scenario.COLLOID:
+			var clear_spirit := _make_recipe("清澈基酒", DEFAULT_LIQUID_VOLUME_LITERS, Color(0.45, 0.86, 1.0, 0.45), 0.65, 0.12)
+			_set_recipe_material(clear_spirit, 30, 0.98, 0.70, 0.35, 0, 0.65, 0.45, 0.65, 0.50)
+			var colloid := _make_recipe("浑浊胶体", DEFAULT_LIQUID_VOLUME_LITERS, Color(0.98, 0.42, 0.58, 0.82), 1.15, 1.20)
+			_set_recipe_material(colloid, 31, 1.04, 3.0, 0.35, 0, 1.35, 1.65, 0.12, 0.18)
+			_fluid_recipes.assign([clear_spirit, colloid])
 		Scenario.ICE, Scenario.HEAVY:
-			_fluid_recipes.clear()
-			_fluid_recipes.append(_make_recipe(
+			var water := _make_recipe(
 				"基础蓝色液体",
 				minf(DEFAULT_LIQUID_VOLUME_LITERS * 2.0, capacity_liters),
-				Color(0.14, 0.62, 0.96, 0.78),
+				Color(0.14, 0.62, 0.96, 0.62),
 				1.0,
-				0.78
-			))
+				0.30
+			)
+			_set_recipe_material(water, 40, 1.0, 1.0, 1.0, 0, 0.85, 0.8, 0.40, 0.35)
+			_fluid_recipes.append(water)
 		Scenario.CUSTOM:
 			pass
 	_reset_runtime_from_recipes()
@@ -516,6 +723,52 @@ func _make_recipe(
 	recipe.turbidity = turbidity
 	return recipe
 
+func _set_recipe_material(
+	recipe: ParticleFluidTestRecipe2D,
+	material_id: int,
+	density_multiplier: float,
+	viscosity_multiplier: float,
+	color_diffusion_multiplier: float,
+	mixing_group: int,
+	dye_strength: float,
+	turbidity_multiplier: float,
+	refractive_strength: float,
+	specular_strength: float
+) -> void:
+	recipe.material_id = material_id
+	recipe.density_multiplier = density_multiplier
+	recipe.viscosity_multiplier = viscosity_multiplier
+	recipe.color_diffusion_multiplier = color_diffusion_multiplier
+	recipe.mixing_group = mixing_group
+	recipe.dye_strength = dye_strength
+	recipe.turbidity_multiplier = turbidity_multiplier
+	recipe.refractive_strength = refractive_strength
+	recipe.specular_strength = specular_strength
+
+func _configure_recipe_materials() -> bool:
+	var material_table: Array[FluidMaterial2D] = []
+	var registered_ids: Dictionary = {}
+	for recipe: ParticleFluidTestRecipe2D in _fluid_recipes:
+		if registered_ids.has(recipe.material_id):
+			continue
+		var material := FluidMaterial2D.new()
+		material.material_id = recipe.material_id
+		material.density_multiplier = recipe.density_multiplier
+		material.viscosity_multiplier = recipe.viscosity_multiplier
+		material.color_diffusion_multiplier = recipe.color_diffusion_multiplier
+		material.mixing_group = recipe.mixing_group
+		material.dye_strength = recipe.dye_strength
+		material.turbidity_multiplier = recipe.turbidity_multiplier
+		material.refractive_strength = recipe.refractive_strength
+		material.specular_strength = recipe.specular_strength
+		material_table.append(material)
+		registered_ids[recipe.material_id] = true
+	var errors := _fluid.set_materials(material_table)
+	if not errors.is_empty():
+		push_error("流体测试材质配置失败：%s" % "；".join(errors))
+		return false
+	return true
+
 func _reset_runtime_from_recipes() -> void:
 	var total_particles := _total_recipe_particles()
 	var capacity := _particle_capacity_for_size(_cup_width_meters, _cup_height_meters)
@@ -535,6 +788,10 @@ func _reset_runtime_from_recipes() -> void:
 	_fluid.set_external_acceleration(Vector2(0.0, 9.81))
 	var empty_fields: Array[FluidForceField2D] = []
 	_fluid.set_force_fields(empty_fields)
+	if not _configure_recipe_materials():
+		_fluid.simulate = false
+		_set_config_feedback("材质配置失败，请查看编辑器输出。", false)
+		return
 	_cup.position = CUP_HOME_PIXELS
 	_cup.rotation = 0.0
 	_cup_velocity_pixels_per_second = Vector2.ZERO
@@ -565,6 +822,7 @@ func _spawn_recipe_particles() -> void:
 			batch.colors_srgb.append(recipe.color_srgb)
 			batch.concentrations.append(recipe.concentration)
 			batch.turbidities.append(recipe.turbidity)
+			batch.material_ids.append(recipe.material_id)
 			global_index += 1
 		_fluid.add_particles(batch)
 
@@ -728,13 +986,14 @@ func _update_recipe_summary() -> void:
 		var recipe := _fluid_recipes[index]
 		_recipe_selector.add_item("%d. %s" % [index + 1, recipe.display_name])
 		lines.append(
-			"%d. %s｜%.1f L｜%d 粒子｜#%s｜浓度 %.2f｜浑浊 %.2f" % [
+			"%d. %s｜%.1f L｜%d 粒子｜材质 %d｜密度 ×%.2f｜黏度 ×%.2f｜浑浊 %.2f" % [
 				index + 1,
 				recipe.display_name,
 				recipe.actual_volume_liters,
 				recipe.particle_count,
-				recipe.color_srgb.to_html(true),
-				recipe.concentration,
+				recipe.material_id,
+				recipe.density_multiplier,
+				recipe.viscosity_multiplier,
 				recipe.turbidity,
 			]
 		)
@@ -773,9 +1032,11 @@ func _configure_body(enabled: bool, mass_kilograms: float) -> void:
 		_floating_body.sleeping = false
 
 func _apply_cup_impulse(value_pixels_per_second: float) -> void:
+	_fluid.wake()
 	_cup_velocity_pixels_per_second.x += value_pixels_per_second
 
 func _apply_cup_angular_impulse(value_radians_per_second: float) -> void:
+	_fluid.wake()
 	_cup_angular_velocity_radians_per_second += value_radians_per_second
 
 func _apply_fluid_impulse() -> void:
@@ -786,25 +1047,66 @@ func _apply_fluid_impulse() -> void:
 	var fields: Array[FluidForceField2D] = [field]
 	_fluid.set_force_fields(fields)
 
+func set_auto_demo_enabled(enabled: bool) -> void:
+	_auto_demo_enabled = enabled
+	_auto_demo_elapsed_seconds = 0.0
+	_auto_demo_direction = 1.0
+	_update_scenario_label()
+
+func _toggle_auto_demo() -> void:
+	set_auto_demo_enabled(not _auto_demo_enabled)
+
+func _toggle_render_mode() -> void:
+	var next_mode := ParticleFluid2D.RenderMode.DIRECT_PARTICLES
+	if _fluid.render_mode == ParticleFluid2D.RenderMode.DIRECT_PARTICLES:
+		next_mode = ParticleFluid2D.RenderMode.OPTICAL_FIELD
+	_fluid.set_render_mode(next_mode)
+	_update_scenario_label()
+
 func _update_scenario_label() -> void:
-	var scenario_name := "两色 Beer-Lambert 减色混合"
+	var scenario_name := "透明 Beer-Lambert 减色混合"
 	match _scenario:
+		Scenario.VISCOSITY:
+			scenario_name = "低黏基酒与高黏糖浆对比"
+		Scenario.DENSITY:
+			scenario_name = "低密度与高密度液体重排"
+		Scenario.COLLOID:
+			scenario_name = "清澈液体与浑浊胶体对比"
 		Scenario.ICE:
 			scenario_name = "低密度规则冰块浮力"
 		Scenario.HEAVY:
 			scenario_name = "高密度规则重物下沉"
 		Scenario.CUSTOM:
 			scenario_name = "自定义杯子与多液体配方"
-	_scenario_label.text = "当前：%s%s" % [scenario_name, "（已暂停）" if not _fluid.simulate else ""]
+	var render_name := "光学场" if _fluid.render_mode == ParticleFluid2D.RenderMode.OPTICAL_FIELD else "直接粒子"
+	_scenario_label.text = "当前：%s｜%s%s%s" % [
+		scenario_name,
+		render_name,
+		"｜自动演示" if _auto_demo_enabled else "",
+		"｜已暂停" if not _fluid.simulate else "",
+	]
 	match _scenario:
 		Scenario.MIXING:
-			_objective_label.text = "先观察红蓝交界，再按住 A/D 晃杯加速混合；颜色以线性透射率/吸光度扩散，不直接平均 sRGB。"
+			_objective_label.text = "步骤：先静置 2 秒，再交替按 A/D 三轮；最后按 M 对比两种渲染。"
+			_criteria_label.text = "通过：红蓝接触区逐渐形成更深的减色结果；厚处更深、薄处更透明；切换渲染不改变运动。"
+		Scenario.VISCOSITY:
+			_objective_label.text = "步骤：按 Space 后观察橙色低黏基酒与紫色高黏糖浆，再交替按 A/D。"
+			_criteria_label.text = "通过：橙色液体响应更快、回荡更明显；紫色糖浆形变与回流更慢；两侧都保持稳定且不穿墙。"
+		Scenario.DENSITY:
+			_objective_label.text = "步骤：高密度蓝液初始位于低密度黄液上方；按 B 自动晃动或手动 A/D，观察 15–30 秒。"
+			_criteria_label.text = "通过：蓝色高密度液体具有下沉趋势，黄色低密度液体具有上移趋势；允许粗粒子界面模糊，但不能速度爆炸。"
+		Scenario.COLLOID:
+			_objective_label.text = "步骤：先比较透明度，再按 Space 和 A/D，观察清澈蓝液与粉色胶体的流动和光学差异。"
+			_criteria_label.text = "通过：蓝液更透明、更灵活；粉色胶体更浑浊、更迟缓；重叠区域按厚度加深且没有黑色矩形或残影。"
 		Scenario.ICE:
-			_objective_label.text = "7 kg 均质矩形的质量低于完全排水质量，应落入液体后回升并以部分浸没状态附近稳定。"
+			_objective_label.text = "步骤：等待冰块落入液体并回升；稳定后按 A/D 晃杯。"
+			_criteria_label.text = "通过：7 kg 冰块最终部分浸没并浮起，浸没率连续变化；冰块和液体都没有瞬移。"
 		Scenario.HEAVY:
-			_objective_label.text = "24 kg 均质矩形重于完全排水质量，应穿过液面并最终落在杯底，不会被浮力托起。"
+			_objective_label.text = "步骤：等待重物穿过液面并到达杯底；随后按 A/D 检查接触稳定性。"
+			_criteria_label.text = "通过：24 kg 重物不能被浮力托住，最终由杯底承托；不得悬空、弹飞或穿透杯底。"
 		Scenario.CUSTOM:
 			_objective_label.text = "在“构造”页调整杯子尺寸，并按升设置每种液体的体积、颜色、浓度和浑浊度；粒子数由体积自动量化。"
+			_criteria_label.text = "通过：配方体积、量化粒子数和液位同步变化；容量不足时拒绝修改而不丢失现有液体。"
 
 
 func _on_step_completed(result: FluidStepResult2D) -> void:
@@ -812,7 +1114,16 @@ func _on_step_completed(result: FluidStepResult2D) -> void:
 	if _floating_body.visible:
 		var ratio := float(result.body_submersion_ratios.get(_floating_body.body_id, 0.0))
 		submersion_text = " | 浸没 %.0f%%" % (ratio * 100.0)
-	_metrics_label.text = "粒子 %d | 子步 %d/%d | 平均密度误差 %.1f%%\n最大速度 %.2f m/s | 邻居 %.1f%s" % [
+	var quiescent_text := " | 已静稳" if result.quiescent_damping_active else ""
+	var physics_milliseconds := float(
+		result.profile_spatial_hash_microseconds
+		+ result.profile_density_microseconds
+		+ result.profile_forces_microseconds
+		+ result.profile_integration_microseconds
+	) / 1000.0
+	_metrics_label.text = "FPS %d | 物理 %.2f ms | 粒子 %d | 子步 %d/%d\n密度误差 %.1f%% | 最大速度 %.2f m/s | 邻居 %.1f%s%s" % [
+		Engine.get_frames_per_second(),
+		physics_milliseconds,
 		result.particle_count,
 		result.substeps,
 		_fluid.config.max_substeps,
@@ -820,14 +1131,21 @@ func _on_step_completed(result: FluidStepResult2D) -> void:
 		result.maximum_speed,
 		result.average_neighbor_count,
 		submersion_text,
+		quiescent_text,
 	]
 	if result.has_non_finite_state:
 		_health_label.text = "❌ 数值状态出现非有限值，请停止并记录复现步骤。"
+		_health_label.add_theme_color_override("font_color", Color(1.0, 0.32, 0.28))
+	elif _scenario != Scenario.CUSTOM and result.particle_count > MAX_INTERACTIVE_PARTICLES:
+		_health_label.text = "❌ 内置用例超过 %d 粒子交互预算。" % MAX_INTERACTIVE_PARTICLES
 		_health_label.add_theme_color_override("font_color", Color(1.0, 0.32, 0.28))
 	elif not result.warnings.is_empty():
 		_health_label.text = "⚠ 有限值正常；诊断告警：%s" % "；".join(result.warnings)
 		_health_label.add_theme_color_override("font_color", Color(1.0, 0.76, 0.3))
 	else:
-		_health_label.text = "✓ 数值有限，当前物理步无稳定性告警"
+		_health_label.text = (
+			"✓ 液体已收敛到静稳状态"
+			if result.quiescent_damping_active
+			else "✓ 数值有限，当前物理步无稳定性告警"
+		)
 		_health_label.add_theme_color_override("font_color", Color(0.45, 0.92, 0.6))
-

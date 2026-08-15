@@ -6,8 +6,8 @@
 
 MaoMaoClub also includes project-local Godot skills from `gd-agentic-skills`.
 Use `.agents/skills/maomao-godot/SKILL.md` as the Godot entry point. It pins
-all Godot work to Godot 4.6.3 stable, exact build
-4.6.3.stable.official.7d41c59c4.
+all Godot work to Godot 4.7.1 stable, exact build
+4.7.1.stable.official.a13da4feb.
 
 ## 设计原则
 

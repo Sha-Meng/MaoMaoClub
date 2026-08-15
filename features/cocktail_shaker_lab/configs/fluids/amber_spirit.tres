@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="FluidConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/domain/fluid_config.gd" id="1_fluid"]
+
+[resource]
+script = ExtResource("1_fluid")
+fluid_id = 1
+fluid_name = "琥珀色酒液（演示）"
+description = "用于验证多液体染色和混合；真实物性为测试占位，应按实际酒液替换。"
+alcohol_by_volume_percent = 40.0
+tags = PackedStringArray("spirit", "amber", "demo")
+reference_temperature_celsius = 20.0
+reference_density_kg_per_cubic_meter = 950.0
+reference_dynamic_viscosity_pascal_seconds = 0.0012
+reference_speed_of_sound_meters_per_second = 1250.0
+reference_refractive_index = 1.36

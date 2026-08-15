@@ -7,9 +7,9 @@ description: "Expert GDScript best practices including static typing (var x: int
 
 ## MaoMaoClub Version Pin
 
-Write and review GDScript for Godot 4.6.3 stable, exact build
-4.6.3.stable.official.7d41c59c4. Prefer typed GDScript patterns supported by
-Godot 4.6.3. Do not rely on syntax, warnings, annotations, or engine APIs that
+Write and review GDScript for Godot 4.7.1 stable, exact build
+4.7.1.stable.official.a13da4feb. Prefer typed GDScript patterns supported by
+Godot 4.7.1. Do not rely on syntax, warnings, annotations, or engine APIs that
 require a newer version unless the user approves an upgrade.
 
 Expert guidance for writing performant, maintainable GDScript following official Godot standards.

@@ -162,7 +162,7 @@ OpenSpec 决定“要做什么”和“完成标准是什么”；Godot 技能�
 
 执行 Godot 工作时仍然遵守：
 
-- Godot 4.6.3 stable。
+- Godot 4.7.1 stable。
 - `maomao-godot` 作为 Godot 任务入口。
 - feature-based 目录结构。
 - typed GDScript 和显式返回类型。

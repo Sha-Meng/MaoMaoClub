@@ -1,6 +1,6 @@
 ---
 name: maomao-godot
-description: "Project-specific Godot entry point for MaoMaoClub. Use for all Godot design, architecture, GDScript, scene, asset pipeline, testing, performance, build, and export work. Enforces the pinned Godot 4.6.3 stable engine version before routing to gd-agentic-skills or Codex Game Studios workflows."
+description: "Project-specific Godot entry point for MaoMaoClub. Use for all Godot design, architecture, GDScript, scene, asset pipeline, testing, performance, build, and export work. Enforces the pinned Godot 4.7.1 stable engine version before routing to gd-agentic-skills or Codex Game Studios workflows."
 ---
 
 # MaoMaoClub Godot Skill
@@ -9,10 +9,10 @@ Use this skill for every Godot-specific task in MaoMaoClub.
 
 ## Hard Version Pin
 
-- Engine: Godot 4.6.3 stable
-- Exact build: 4.6.3.stable.official.7d41c59c4
+- Engine: Godot 4.7.1 stable
+- Exact build: 4.7.1.stable.official.a13da4feb
 - Target OS: Windows only
-- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'
+- Local binary: 'D:\Godot_v4.7.1-stable_win64.exe\Godot_v4.7.1-stable_win64.exe'
 - Version file: `.godot-version`
 
 All Godot choices must target this exact version unless the user explicitly
@@ -20,8 +20,8 @@ approves an upgrade.
 
 Before using version-sensitive APIs, editor settings, export behavior, physics
 behavior, rendering behavior, or CLI automation, check that the approach is
-compatible with Godot 4.6.3 stable. If a vendored skill mentions a different
-Godot version, adapt it to 4.6.3 or ask before proceeding.
+compatible with Godot 4.7.1 stable. If a vendored skill mentions a different
+Godot version, adapt it to 4.7.1 or ask before proceeding.
 
 ## Routing
 

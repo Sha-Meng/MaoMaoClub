@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="FluidParticleSimulationTable2D" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/simulation/fluid_particle_simulation_table_2d.gd" id="1_table"]
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/simulation/fluid_particle_simulation_config_2d.gd" id="2_simulation"]
+[ext_resource type="Resource" path="res://features/cocktail_shaker_lab/configs/simulations/water_particle_simulation.tres" id="3_water"]
+[ext_resource type="Resource" path="res://features/cocktail_shaker_lab/configs/simulations/amber_spirit_particle_simulation.tres" id="4_amber"]
+
+[resource]
+script = ExtResource("1_table")
+default_fluid_id = 0
+entries = Array[ExtResource("2_simulation")]([ExtResource("3_water"), ExtResource("4_amber")])

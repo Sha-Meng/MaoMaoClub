@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/cocktail_shaker_lab.gd" id="1_lab"]
+[ext_resource type="Resource" path="res://features/cocktail_shaker_lab/configs/default_shaker_test.tres" id="2_config"]
+
+[node name="CocktailShakerLab" type="Node2D"]
+script = ExtResource("1_lab")
+test_config = ExtResource("2_config")

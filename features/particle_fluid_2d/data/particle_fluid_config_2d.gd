@@ -24,6 +24,16 @@ class_name ParticleFluidConfig2D
 @export var max_speed_meters_per_second: float = 30.0
 @export var density_error_warning_ratio: float = 0.2
 
+@export_category("Quiescence")
+@export var quiescent_damping_per_second: float = 0.0
+@export var quiescent_activation_delay_seconds: float = 0.6
+@export var quiescent_max_average_speed: float = 2.0
+@export var quiescent_stop_speed: float = 0.03
+@export var quiescent_container_speed_threshold: float = 0.04
+@export var quiescent_container_acceleration_threshold: float = 0.2
+@export var quiescent_buoyant_body_linear_speed_threshold: float = 0.04
+@export var quiescent_buoyant_body_angular_speed_threshold: float = 0.04
+
 @export_category("Mixing")
 @export var color_diffusion: float = 0.08
 @export var optical_path_length: float = 1.0
@@ -59,6 +69,17 @@ func validate() -> PackedStringArray:
 	_require_positive_finite(errors, "max_speed_meters_per_second", max_speed_meters_per_second)
 	if not is_finite(density_error_warning_ratio) or density_error_warning_ratio <= 0.0:
 		errors.append("density_error_warning_ratio must be finite and positive")
+	if not is_finite(quiescent_damping_per_second) or quiescent_damping_per_second < 0.0:
+		errors.append("quiescent_damping_per_second must be finite and non-negative")
+	if not is_finite(quiescent_activation_delay_seconds) or quiescent_activation_delay_seconds < 0.0:
+		errors.append("quiescent_activation_delay_seconds must be finite and non-negative")
+	_require_positive_finite(errors, "quiescent_max_average_speed", quiescent_max_average_speed)
+	if not is_finite(quiescent_stop_speed) or quiescent_stop_speed < 0.0:
+		errors.append("quiescent_stop_speed must be finite and non-negative")
+	_require_positive_finite(errors, "quiescent_container_speed_threshold", quiescent_container_speed_threshold)
+	_require_positive_finite(errors, "quiescent_container_acceleration_threshold", quiescent_container_acceleration_threshold)
+	_require_positive_finite(errors, "quiescent_buoyant_body_linear_speed_threshold", quiescent_buoyant_body_linear_speed_threshold)
+	_require_positive_finite(errors, "quiescent_buoyant_body_angular_speed_threshold", quiescent_buoyant_body_angular_speed_threshold)
 	if not is_finite(color_diffusion) or color_diffusion < 0.0:
 		errors.append("color_diffusion must be finite and non-negative")
 	_require_positive_finite(errors, "optical_path_length", optical_path_length)

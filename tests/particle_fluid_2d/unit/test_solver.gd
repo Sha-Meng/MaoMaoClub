@@ -10,6 +10,8 @@ func run(suite: ParticleFluidTestSuite2D) -> void:
 	_suite.run_case("solver viscosity dissipates", _test_viscosity)
 	_suite.run_case("solver deterministic snapshots", _test_determinism)
 	_suite.run_case("solver substep limits and warnings", _test_substep_limits)
+	_suite.run_case("solver quiescent damping wakes for active force", _test_quiescent_damping)
+	_suite.run_case("solver explicit velocity damping", _test_explicit_velocity_damping)
 	_suite.run_case("open cup boundary", _test_open_cup)
 
 func _make_config() -> ParticleFluidConfig2D:
@@ -98,6 +100,65 @@ func _test_substep_limits() -> void:
 	fixed.configure(fixed_config)
 	fixed.add_particles(_make_batch(PackedVector2Array([Vector2.ZERO])))
 	_suite.expect_equal(fixed.step(0.01).substeps, 3, "fixed test mode must use configured deterministic substeps")
+
+func _test_quiescent_damping() -> void:
+	var config := _make_config()
+	config.gas_stiffness = 0.0001
+	config.dynamic_viscosity = 0.0
+	config.quiescent_damping_per_second = 10.0
+	config.quiescent_activation_delay_seconds = 0.0
+	config.quiescent_max_average_speed = 2.0
+	config.quiescent_stop_speed = 0.0
+	var solver := ParticleFluidSolver2D.new()
+	solver.configure(config)
+	solver.add_particles(_make_batch(
+		PackedVector2Array([Vector2.ZERO]),
+		PackedVector2Array([Vector2(1.0, 0.0)])
+	))
+	var damped := solver.step(0.1)
+	_suite.expect_true(damped.quiescent_damping_active, "stationary environment must activate quiescent damping")
+	_suite.expect_near(
+		damped.snapshot.velocities_meters_per_second[0].x,
+		exp(-1.0),
+		0.0001,
+		"quiescent damping must be exponential and frame-rate independent"
+	)
+	var field := FluidForceField2D.new()
+	field.acceleration = Vector2(2.0, 0.0)
+	field.remaining_seconds = 0.2
+	var fields: Array[FluidForceField2D] = [field]
+	solver.set_force_fields(fields)
+	var active := solver.step(0.1)
+	_suite.expect_true(not active.quiescent_damping_active, "active force must wake quiescent damping immediately")
+	_suite.expect_true(
+		active.snapshot.velocities_meters_per_second[0].x > damped.snapshot.velocities_meters_per_second[0].x,
+		"active force must accelerate fluid without quiescent damping"
+	)
+
+
+func _test_explicit_velocity_damping() -> void:
+	var solver := ParticleFluidSolver2D.new()
+	solver.configure(_make_config())
+	solver.add_particles(_make_batch(
+		PackedVector2Array([Vector2.ZERO, Vector2(0.2, 0.0)]),
+		PackedVector2Array([Vector2(2.0, 0.0), Vector2(0.02, 0.0)])
+	))
+	solver.apply_velocity_damping(10.0, 0.1, 0.01)
+	var snapshot := solver.get_state_snapshot()
+	_suite.expect_near(
+		snapshot.velocities_meters_per_second[0].x,
+		2.0 * exp(-1.0),
+		0.0001,
+		"explicit damping must be exponential and frame-rate independent"
+	)
+	solver.apply_velocity_damping(10.0, 0.1, 0.01)
+	solver.apply_velocity_damping(10.0, 0.1, 0.01)
+	_suite.expect_vector_near(
+		solver.get_state_snapshot().velocities_meters_per_second[1],
+		Vector2.ZERO,
+		0.000001,
+		"explicit damping must snap velocities below the configured stop speed"
+	)
 
 func _test_open_cup() -> void:
 	var shape := ContainerShape2D.new()

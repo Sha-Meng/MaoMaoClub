@@ -10,12 +10,12 @@ description: "Consolidated expert library for professional Godot 4.x game and ap
 This vendored skill is used inside MaoMaoClub under a project-level version
 constraint:
 
-- Engine: Godot 4.6.3 stable
-- Exact build: 4.6.3.stable.official.7d41c59c4
+- Engine: Godot 4.7.1 stable
+- Exact build: 4.7.1.stable.official.a13da4feb
 
 All architecture, API, CLI, rendering, physics, export, and GDScript guidance
-from this skill must be interpreted against Godot 4.6.3 stable. If any embedded
-reference implies a different Godot version, adapt it to 4.6.3 or ask before
+from this skill must be interpreted against Godot 4.7.1 stable. If any embedded
+reference implies a different Godot version, adapt it to 4.7.1 or ask before
 using version-specific behavior.
 
 Every section earns its tokens by focusing on **Knowledge Delta** — the gap between what Claude already knows and what a senior Godot engineer knows from shipping real products.

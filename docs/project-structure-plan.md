@@ -25,11 +25,11 @@ tools/
 ```
 
 因此现阶段的目录规划目标不是一次性铺满所有内容，而是先建立一套适合
-Godot 4.6.3 的、可持续扩展的 feature-based 结构。
+Godot 4.7.1 的、可持续扩展的 feature-based 结构。
 
 ## 组织原则
 
-- 固定使用 Godot 4.6.3 stable。
+- 固定使用 Godot 4.7.1 stable。
 - 文件和目录使用 `snake_case`。
 - Godot 节点名使用 `PascalCase`。
 - 优先按功能组织，不按文件类型组织。

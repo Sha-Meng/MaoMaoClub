@@ -7,8 +7,8 @@ description: "Expert blueprint for testing patterns using GUT (Godot Unit Test),
 
 ## MaoMaoClub Version Pin
 
-Design tests for Godot 4.6.3 stable, exact build
-4.6.3.stable.official.7d41c59c4. Test framework setup, CLI execution, and
+Design tests for Godot 4.7.1 stable, exact build
+4.7.1.stable.official.a13da4feb. Test framework setup, CLI execution, and
 scene lifecycle assumptions must remain compatible with this version.
 
 GUT framework, assertion patterns, mocking, and async testing define automated validation.

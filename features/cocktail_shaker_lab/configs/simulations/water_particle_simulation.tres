@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="FluidParticleSimulationConfig2D" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://features/cocktail_shaker_lab/simulation/fluid_particle_simulation_config_2d.gd" id="1_simulation"]
+[ext_resource type="Script" path="res://features/particle_fluid_2d/data/particle_fluid_config_2d.gd" id="2_solver"]
+
+[sub_resource type="Resource" id="ParticleFluidConfig_water"]
+script = ExtResource("2_solver")
+pixels_per_meter = 280.0
+effective_depth_meters = 0.004
+rest_density = 1000.0
+particle_mass = 0.0121
+smoothing_radius_meters = 0.1045
+gas_stiffness = 42250.0
+tait_exponent = 7.0
+speed_of_sound = 6.5
+dynamic_viscosity = 4.0
+gravity_meters_per_second_squared = Vector2(0, 9.81)
+max_substeps = 6
+min_substep_seconds = 0.00025
+cfl_factor = 0.25
+fixed_test_substeps = 0
+enable_step_profiling = true
+max_speed_meters_per_second = 30.0
+density_error_warning_ratio = 0.75
+quiescent_damping_per_second = 28.0
+quiescent_activation_delay_seconds = 0.22
+quiescent_max_average_speed = 2.5
+quiescent_stop_speed = 0.025
+quiescent_container_speed_threshold = 0.12
+quiescent_container_acceleration_threshold = 2.0
+quiescent_buoyant_body_linear_speed_threshold = 0.6
+quiescent_buoyant_body_angular_speed_threshold = 5.0
+color_diffusion = 0.9
+optical_path_length = 1.0
+boundary_restitution = 0.0
+boundary_friction = 0.05
+boundary_particle_spacing_ratio = 0.65
+enable_container_reaction = false
+
+[resource]
+script = ExtResource("1_simulation")
+fluid_id = 0
+particle_config = SubResource("ParticleFluidConfig_water")
+volume_per_add_liters = 0.21
+pour_stream_columns = 3
+pour_spawn_depth_meters = 0.035
+pour_initial_downward_speed_meters_per_second = 0.75
+display_color_srgb = Color(0.72, 0.9, 1, 0.68)
+concentration = 0.35
+turbidity = 0.24
+density_multiplier = 0.9982
+viscosity_multiplier = 1.0
+color_diffusion_multiplier = 1.0
+mixing_group = 0
+dye_strength = 0.30
+turbidity_multiplier = 1.0
+refractive_strength = 0.333
+specular_strength = 0.38

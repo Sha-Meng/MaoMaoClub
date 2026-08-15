@@ -11,12 +11,12 @@ Use this skill when you need to: (1) Build complex scene trees or UI layouts pro
 
 This skill must use the MaoMaoClub pinned engine:
 
-- Engine: Godot 4.6.3 stable
-- Exact build: 4.6.3.stable.official.7d41c59c4
+- Engine: Godot 4.7.1 stable
+- Exact build: 4.7.1.stable.official.a13da4feb
 - Target OS: Windows only
-- Local binary: 'C:\Users\shame\Downloads\Godot_v4.6.3-stable_win64.exe\Godot_v4.6.3-stable_win64.exe'
+- Local binary: 'D:\Godot_v4.7.1-stable_win64.exe\Godot_v4.7.1-stable_win64.exe'
 
-The `godot-builder` skill provides an expert-grade foundation for programmatic game development and headless automation using the Godot 4.6.3-stable CLI.
+The `godot-builder` skill provides an expert-grade foundation for programmatic game development and headless automation using the Godot 4.7.1-stable CLI.
 
 ## Expert Automation Mindset
 

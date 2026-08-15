@@ -10,7 +10,7 @@ TBD - created by archiving change validate-desktop-idle-mvp. Update Purpose afte
 #### Scenario: 验证平台目标
 
 - WHEN 桌面挂机 MVP 被实现
-- THEN 实现目标是 Windows 上的 Godot 4.6.3 stable
+- THEN 实现目标是 Windows 上的 Godot 4.7.1 stable
 - AND 本地验证使用 Windows Godot 可执行文件
 
 ### Requirement: A 档桌面小酒馆窗口
