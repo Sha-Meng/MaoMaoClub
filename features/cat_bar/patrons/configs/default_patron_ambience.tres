@@ -1,0 +1,47 @@
+[gd_resource type="Resource" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/patrons/config/patron_ambience_config.gd" id="1"]
+[ext_resource type="Script" path="res://features/cat_bar/patrons/config/patron_prototype.gd" id="2"]
+[ext_resource type="Script" path="res://features/cat_bar/patrons/config/patron_seat_definition.gd" id="3"]
+[ext_resource type="Texture2D" path="res://assets/cat_bar/characters/cat_roles_atlas_generated.png" id="4_atlas"]
+
+[sub_resource type="AtlasTexture" id="Atlas_night_owl"]
+atlas = ExtResource("4_atlas")
+region = Rect2(0, 627, 627, 627)
+
+[sub_resource type="AtlasTexture" id="Atlas_office_cat"]
+atlas = ExtResource("4_atlas")
+region = Rect2(627, 627, 627, 627)
+
+[sub_resource type="Resource" id="PatronA"]
+script = ExtResource("2")
+patron_id = &"night_owl"
+display_name = "夜猫客"
+body_color = Color(0.62, 0.49, 0.78, 1)
+character_texture = SubResource("Atlas_night_owl")
+
+[sub_resource type="Resource" id="PatronB"]
+script = ExtResource("2")
+patron_id = &"office_cat"
+display_name = "下班猫"
+body_color = Color(0.44, 0.68, 0.74, 1)
+character_texture = SubResource("Atlas_office_cat")
+
+[sub_resource type="Resource" id="SeatA"]
+script = ExtResource("3")
+seat_id = &"booth_a"
+position_pixels = Vector2(710, 392)
+
+[sub_resource type="Resource" id="SeatB"]
+script = ExtResource("3")
+seat_id = &"booth_b"
+position_pixels = Vector2(240, 398)
+
+[resource]
+script = ExtResource("1")
+prototypes = Array[ExtResource("2")]([SubResource("PatronA"), SubResource("PatronB")])
+seats = Array[ExtResource("3")]([SubResource("SeatA"), SubResource("SeatB")])
+spawn_interval_seconds = 3.0
+stay_seconds = 9.0
+max_active = 2
+random_seed = 20260903

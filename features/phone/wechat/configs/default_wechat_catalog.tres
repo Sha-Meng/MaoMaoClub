@@ -1,0 +1,169 @@
+[gd_resource type="Resource" load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://features/phone/wechat/config/wechat_content_catalog.gd" id="1"]
+[ext_resource type="Script" path="res://features/phone/wechat/config/wechat_contact_definition.gd" id="2"]
+[ext_resource type="Script" path="res://features/phone/wechat/config/wechat_message_template.gd" id="3"]
+[ext_resource type="Script" path="res://features/phone/wechat/config/wechat_moment_template.gd" id="4"]
+
+[sub_resource type="Resource" id="ContactManager"]
+script = ExtResource("2")
+contact_id = &"manager_cat"
+display_name = "店长猫"
+avatar_id = &"avatar_manager_cat"
+relationship_label = "店长"
+initially_unlocked = true
+profile_summary = "CatBar 的店长兼首席调酒师，擅长观察客人的情绪，也很在意每一只杯子的状态。"
+interests = PackedStringArray("经典鸡尾酒", "经营", "爵士乐", "猫咪心理")
+hobbies = PackedStringArray("擦杯子", "收藏旧唱片", "深夜记账")
+personality_traits = PackedStringArray("沉稳", "细心", "嘴硬心软")
+reply_style = "句子简洁、像值班交代；先回应重点，再补一句克制的关心。"
+catchphrases = PackedStringArray("先把手头这杯做好。", "慢一点，味道会告诉你答案。")
+greeting_replies = PackedStringArray("在。吧台这边一切正常，你呢？", "晚上好。今天想聊工作，还是聊一杯酒？")
+question_replies = PackedStringArray("我的建议是先看事实，再决定要不要加一份糖。", "可以试，但记得给自己留一点余量。")
+interest_replies = PackedStringArray("说到{topic}，我最近正好在整理一套新的搭配。", "{topic}值得慢慢研究，别急着一次找完答案。")
+general_replies = PackedStringArray("收到。我记着了。", "嗯，我在听。你可以继续说。", "听起来你今天经历了不少。")
+
+[sub_resource type="Resource" id="ContactWorker"]
+script = ExtResource("2")
+contact_id = &"worker_cat"
+display_name = "打工猫"
+avatar_id = &"avatar_worker_cat"
+relationship_label = "同事"
+initially_unlocked = true
+profile_summary = "负责备料和收台的打工猫，消息很多、情绪来得快去得也快，是 CatBar 的情报中心。"
+interests = PackedStringArray("新品零食", "排班八卦", "可爱贴纸", "轻松游戏")
+hobbies = PackedStringArray("摸鱼", "给冰块分类", "收集表情包")
+personality_traits = PackedStringArray("活泼", "爱吐槽", "热心", "容易兴奋")
+reply_style = "短句、口语化、反应很快；常用感叹号，吐槽后会主动提供帮助。"
+catchphrases = PackedStringArray("让我先嚎一嗓子！", "问题不大，我来补位！")
+greeting_replies = PackedStringArray("我在我在！今天没有偷偷摸鱼……大概！", "嗨！你一发消息我就看见啦。")
+question_replies = PackedStringArray("可以呀！要不我们先试最省力的那个办法？", "这个我知道一点！等我把思路捋成猫爪印。")
+interest_replies = PackedStringArray("你也喜欢{topic}？这题我能聊一整班！", "{topic}可以！下次休息一起研究呀。")
+general_replies = PackedStringArray("懂了懂了，我已经疯狂点头！", "这也太真实了吧！", "收到！需要帮忙就直接喊我。")
+
+[sub_resource type="Resource" id="ContactMingcai"]
+script = ExtResource("2")
+contact_id = &"regular_mingcai"
+display_name = "酒吧常客名菜"
+avatar_id = &"avatar_regular_mingcai"
+relationship_label = "常客"
+initially_unlocked = true
+profile_summary = "几乎每周都会来 CatBar 的美食编辑，习惯记下气味、音乐和人与人之间的小细节。"
+interests = PackedStringArray("城市探店", "鸡尾酒故事", "摄影", "旅行")
+hobbies = PackedStringArray("写短评", "拍霓虹灯", "收集车票")
+personality_traits = PackedStringArray("温和", "健谈", "浪漫", "观察力强")
+reply_style = "像写生活随笔，回复温柔且带画面感；偶尔用味道或天气作比喻。"
+catchphrases = PackedStringArray("值得记进今晚。", "有些味道会替人记住时间。")
+greeting_replies = PackedStringArray("晚上好，刚好路过一盏很像 CatBar 的灯。", "嗨。今天的风有点甜，你过得怎么样？")
+question_replies = PackedStringArray("如果是我，会选让明天想起来仍然舒服的那个答案。", "不妨先问问自己：更想留下哪一种感受？")
+interest_replies = PackedStringArray("{topic}很适合慢慢聊，我已经想到几个有趣的地方了。", "说到{topic}，我脑子里先亮起了一小块霓虹。")
+general_replies = PackedStringArray("我能想象那个画面。", "听起来像一段值得记下来的夜晚。", "嗯，你继续说，我很愿意听。")
+
+[sub_resource type="Resource" id="ContactTraveler"]
+script = ExtResource("2")
+contact_id = &"traveler_cat"
+display_name = "旅行猫阿岚"
+avatar_id = &"avatar_traveler_cat"
+relationship_label = "新朋友"
+initially_unlocked = false
+unlock_event = &"meet_patron"
+profile_summary = "背着旧相机四处旅行的猫，路线经常改变，但总能从陌生城市寄回有趣的消息。"
+interests = PackedStringArray("慢旅行", "海边小城", "地方料理", "胶片摄影")
+hobbies = PackedStringArray("画路线图", "寄明信片", "追日落")
+personality_traits = PackedStringArray("自由", "乐观", "好奇", "随性")
+reply_style = "回复像旅行明信片，轻快、有地点感；喜欢提出下一段路的邀请。"
+catchphrases = PackedStringArray("路还长，先去看看。", "下一站说不定更有趣。")
+greeting_replies = PackedStringArray("嗨！我刚下车，信号和晚霞一起回来了。", "在路上！不过你的消息我秒收到了。")
+question_replies = PackedStringArray("先出发一小段吧，很多答案要换个地方才看得见。", "我会选让自己更好奇的那条路。")
+interest_replies = PackedStringArray("{topic}！我旅行清单里正好有一页写着它。", "聊到{topic}，我又想收拾背包了。")
+general_replies = PackedStringArray("听见啦！我在地图边上给你留个记号。", "这个故事很适合配一张沿途的照片。", "等我回城，我们当面继续聊。")
+
+[sub_resource type="Resource" id="MessageManager"]
+script = ExtResource("3")
+template_id = &"manager_delivery_praise"
+author_ids = Array[StringName]([&"manager_cat"])
+trigger_tags = Array[StringName]([&"order_delivered", &"new_day"])
+weight = 3
+text = "今晚的出品很稳，Neko 送杯也越来越利落了。"
+cooldown_events = 1
+mutex_key = &"manager_feedback"
+
+[sub_resource type="Resource" id="MessageWorker"]
+script = ExtResource("3")
+template_id = &"worker_shift_note"
+author_ids = Array[StringName]([&"worker_cat"])
+trigger_tags = Array[StringName]([&"new_day", &"order_delivered"])
+weight = 2
+text = "冰箱第二层我补好冰了，猫薄荷也贴了日期。"
+cooldown_events = 1
+
+[sub_resource type="Resource" id="MessageRegular"]
+script = ExtResource("3")
+template_id = &"regular_cheers"
+author_ids = Array[StringName]([&"regular_mingcai"])
+trigger_tags = Array[StringName]([&"order_delivered", &"meet_patron"])
+weight = 2
+text = "刚才那杯月夜猫语很有记忆点，下次还点它！"
+cooldown_events = 1
+
+[sub_resource type="Resource" id="MomentDaily"]
+script = ExtResource("4")
+template_id = &"daily_window"
+author_ids = Array[StringName]([&"worker_cat", &"regular_mingcai"])
+trigger_tags = Array[StringName]([&"new_day"])
+weight = 2
+text = "傍晚的窗边刚好有一小块暖光，今天也慢慢来。"
+category = &"daily"
+image_ids = Array[StringName]([&"moment_daily_window"])
+
+[sub_resource type="Resource" id="MomentCheckin"]
+script = ExtResource("4")
+template_id = &"bar_checkin"
+author_ids = Array[StringName]([&"regular_mingcai"])
+trigger_tags = Array[StringName]([&"order_delivered"])
+weight = 4
+text = "CatBar 打卡！灯光、音乐和这杯酒都刚刚好。"
+category = &"bar_checkin"
+image_ids = Array[StringName]([&"moment_bar_glass", &"moment_bar_neon"])
+cooldown_events = 1
+
+[sub_resource type="Resource" id="MomentTravel"]
+script = ExtResource("4")
+template_id = &"travel_vlog"
+author_ids = Array[StringName]([&"manager_cat", &"regular_mingcai"])
+trigger_tags = Array[StringName]([&"new_day"])
+weight = 1
+text = "海边小城两日 vlog：走错路、吃到好鱼、最后赶上了落日。"
+category = &"travel_vlog"
+image_ids = Array[StringName]([&"moment_travel_sea", &"moment_travel_train", &"moment_travel_sunset"])
+
+[sub_resource type="Resource" id="MomentReflection"]
+script = ExtResource("4")
+template_id = &"life_reflection"
+author_ids = Array[StringName]([&"manager_cat"])
+trigger_tags = Array[StringName]([&"new_day"])
+weight = 1
+text = "有时答案不是更快地抵达，而是知道今天为何出发。"
+category = &"reflection"
+image_ids = Array[StringName]([])
+
+[sub_resource type="Resource" id="MomentWork"]
+script = ExtResource("4")
+template_id = &"work_grumble"
+author_ids = Array[StringName]([&"worker_cat"])
+trigger_tags = Array[StringName]([&"order_delivered", &"new_day"])
+weight = 2
+text = "职业吐槽：客人说“随便来一杯”，但随便从来不是配方。"
+category = &"work_grumble"
+image_ids = Array[StringName]([&"moment_work_shaker"])
+cooldown_events = 1
+
+[resource]
+script = ExtResource("1")
+contacts = Array[ExtResource("2")]([SubResource("ContactManager"), SubResource("ContactWorker"), SubResource("ContactMingcai"), SubResource("ContactTraveler")])
+message_templates = Array[ExtResource("3")]([SubResource("MessageManager"), SubResource("MessageWorker"), SubResource("MessageRegular")])
+moment_templates = Array[ExtResource("4")]([SubResource("MomentDaily"), SubResource("MomentCheckin"), SubResource("MomentTravel"), SubResource("MomentReflection"), SubResource("MomentWork")])
+message_history_limit = 64
+moment_history_limit = 32
+processed_event_limit = 128
+initial_moment_count = 5

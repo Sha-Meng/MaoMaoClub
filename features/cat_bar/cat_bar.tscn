@@ -1,0 +1,104 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/cat_bar_controller.gd" id="1_controller"]
+[ext_resource type="Script" path="res://features/cat_bar/cat_bar_world_view.gd" id="2_world"]
+[ext_resource type="Script" path="res://features/cat_bar/camera/cat_bar_camera_controller.gd" id="3_camera"]
+[ext_resource type="PackedScene" path="res://features/cat_bar/bartending/presentation/bartending_station.tscn" id="4_station"]
+[ext_resource type="Script" path="res://features/cat_bar/service/neko_delivery_actor.gd" id="5_neko"]
+[ext_resource type="Script" path="res://features/cat_bar/patrons/patron_ambience_controller.gd" id="6_patrons"]
+[ext_resource type="PackedScene" path="res://features/phone/shell/phone_shell.tscn" id="7_phone"]
+[ext_resource type="Script" path="res://features/cat_bar/service/worker_cat_delivery_actor.gd" id="8_worker"]
+[ext_resource type="Script" path="res://features/cat_bar/service/counter_drink_view.gd" id="9_counter"]
+[ext_resource type="Texture2D" path="res://assets/cat_bar/characters/cat_roles_atlas_generated.png" id="10_cat_atlas"]
+
+[sub_resource type="AtlasTexture" id="Atlas_bartender"]
+atlas = ExtResource("10_cat_atlas")
+region = Rect2(0, 0, 627, 627)
+
+[sub_resource type="AtlasTexture" id="Atlas_worker"]
+atlas = ExtResource("10_cat_atlas")
+region = Rect2(627, 0, 627, 627)
+
+[node name="CatBar" type="Node2D"]
+script = ExtResource("1_controller")
+
+[node name="WorldView" type="Node2D" parent="."]
+script = ExtResource("2_world")
+
+[node name="BarHotspot" type="Button" parent="."]
+unique_name_in_owner = true
+offset_left = 326.0
+offset_top = 186.0
+offset_right = 634.0
+offset_bottom = 276.0
+mouse_default_cursor_shape = 2
+text = "点击进入调酒台"
+
+[node name="Neko" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(480, 166)
+script = ExtResource("5_neko")
+character_texture = SubResource("Atlas_bartender")
+
+[node name="WorkerCat" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(645, 167)
+script = ExtResource("8_worker")
+character_texture = SubResource("Atlas_worker")
+
+[node name="DrinkPickupMarker" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(575, 203)
+
+[node name="CounterDrink" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(575, 197)
+visible = false
+script = ExtResource("9_counter")
+
+[node name="BoothAMarker" type="Marker2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(710, 392)
+
+[node name="PatronAmbience" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("6_patrons")
+
+[node name="OverviewMarker" type="Marker2D" parent="."]
+position = Vector2(480, 270)
+
+[node name="MixingMarker" type="Marker2D" parent="."]
+position = Vector2(470, 185)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(480, 270)
+position_smoothing_enabled = false
+
+[node name="CameraController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_camera")
+
+[node name="BartendingLayer" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="BartendingStation" parent="BartendingLayer" instance=ExtResource("4_station")]
+unique_name_in_owner = true
+offset_left = 100.0
+offset_top = 88.0
+offset_right = 860.0
+offset_bottom = 428.0
+
+[node name="HudLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="ModeLabel" type="Label" parent="HudLayer"]
+unique_name_in_owner = true
+offset_left = 14.0
+offset_top = 10.0
+offset_right = 220.0
+offset_bottom = 38.0
+text = "模式：OVERVIEW"
+
+[node name="PhoneShell" parent="." instance=ExtResource("7_phone")]
+unique_name_in_owner = true

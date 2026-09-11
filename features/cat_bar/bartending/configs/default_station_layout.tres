@@ -1,0 +1,119 @@
+[gd_resource type="Resource" script_class="StationLayoutDefinition" load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/station_layout_definition.gd" id="1_layout"]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/station_zone_definition.gd" id="2_zone"]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/station_slot_definition.gd" id="3_slot"]
+
+[sub_resource type="Resource" id="SlotMoonGin"]
+script = ExtResource("3_slot")
+slot_id = &"moon_gin_slot"
+content_kind = &"ingredient"
+content_id = &"moon_gin"
+allowed_categories = Array[StringName]([&"liquid"])
+anchor_pixels = Vector2i(20, 82)
+sort_order = 0
+
+[sub_resource type="Resource" id="SlotDusk"]
+script = ExtResource("3_slot")
+slot_id = &"dusk_liqueur_slot"
+content_kind = &"ingredient"
+content_id = &"dusk_liqueur"
+allowed_categories = Array[StringName]([&"liquid"])
+anchor_pixels = Vector2i(125, 82)
+sort_order = 1
+
+[sub_resource type="Resource" id="ZoneLiquids"]
+script = ExtResource("2_zone")
+zone_id = &"liquid_zone"
+display_name = "酒液区"
+allowed_categories = Array[StringName]([&"liquid"])
+sort_order = 0
+slots = Array[ExtResource("3_slot")]([SubResource("SlotMoonGin"), SubResource("SlotDusk")])
+
+[sub_resource type="Resource" id="SlotIce"]
+script = ExtResource("3_slot")
+slot_id = &"clear_ice_slot"
+content_kind = &"ingredient"
+content_id = &"clear_ice"
+allowed_categories = Array[StringName]([&"ice"])
+anchor_pixels = Vector2i(230, 82)
+
+[sub_resource type="Resource" id="ZoneIce"]
+script = ExtResource("2_zone")
+zone_id = &"ice_zone"
+display_name = "冰料区"
+allowed_categories = Array[StringName]([&"ice"])
+sort_order = 1
+slots = Array[ExtResource("3_slot")]([SubResource("SlotIce")])
+
+[sub_resource type="Resource" id="SlotSpice"]
+script = ExtResource("3_slot")
+slot_id = &"catnip_spice_slot"
+content_kind = &"ingredient"
+content_id = &"catnip_spice"
+allowed_categories = Array[StringName]([&"spice"])
+anchor_pixels = Vector2i(335, 82)
+
+[sub_resource type="Resource" id="ZoneSpices"]
+script = ExtResource("2_zone")
+zone_id = &"spice_zone"
+display_name = "香料区"
+allowed_categories = Array[StringName]([&"spice"])
+sort_order = 2
+slots = Array[ExtResource("3_slot")]([SubResource("SlotSpice")])
+
+[sub_resource type="Resource" id="SlotShaker"]
+script = ExtResource("3_slot")
+slot_id = &"shaker_slot"
+content_kind = &"tool"
+content_id = &"shaker"
+allowed_categories = Array[StringName]([&"tool"])
+anchor_pixels = Vector2i(20, 154)
+sort_order = 0
+
+[sub_resource type="Resource" id="SlotJigger"]
+script = ExtResource("3_slot")
+slot_id = &"jigger_slot"
+content_kind = &"tool"
+content_id = &"jigger"
+allowed_categories = Array[StringName]([&"tool"])
+anchor_pixels = Vector2i(125, 154)
+sort_order = 1
+
+[sub_resource type="Resource" id="SlotSpoon"]
+script = ExtResource("3_slot")
+slot_id = &"bar_spoon_slot"
+content_kind = &"tool"
+content_id = &"bar_spoon"
+allowed_categories = Array[StringName]([&"tool"])
+anchor_pixels = Vector2i(230, 154)
+sort_order = 2
+
+[sub_resource type="Resource" id="ZoneTools"]
+script = ExtResource("2_zone")
+zone_id = &"tool_zone"
+display_name = "器具区"
+allowed_categories = Array[StringName]([&"tool"])
+sort_order = 3
+slots = Array[ExtResource("3_slot")]([SubResource("SlotShaker"), SubResource("SlotJigger"), SubResource("SlotSpoon")])
+
+[sub_resource type="Resource" id="SlotGlass"]
+script = ExtResource("3_slot")
+slot_id = &"coupe_glass_slot"
+content_kind = &"glass"
+content_id = &"coupe_glass"
+allowed_categories = Array[StringName]([&"glass"])
+anchor_pixels = Vector2i(335, 154)
+
+[sub_resource type="Resource" id="ZoneGlasses"]
+script = ExtResource("2_zone")
+zone_id = &"glass_zone"
+display_name = "酒杯区"
+allowed_categories = Array[StringName]([&"glass"])
+sort_order = 4
+slots = Array[ExtResource("3_slot")]([SubResource("SlotGlass")])
+
+[resource]
+script = ExtResource("1_layout")
+layout_id = &"default_bar_station"
+zones = Array[ExtResource("2_zone")]([SubResource("ZoneLiquids"), SubResource("ZoneIce"), SubResource("ZoneSpices"), SubResource("ZoneTools"), SubResource("ZoneGlasses")])

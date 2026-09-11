@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="IngredientDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/ingredient_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+content_id = &"catnip_spice"
+display_name = "猫薄荷香料"
+asset_id = &"ingredient_catnip_placeholder"
+placeholder = true
+category = 2
+interaction_id = &"sprinkle"
+default_dose = 1.0
+maximum_stock = -1
+fluid_id = -1
+color = Color(0.55, 0.82, 0.35, 1)
+flavor_tags = Array[StringName]([&"herbal", &"aromatic"])
+

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ToolDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/tool_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+content_id = &"jigger"
+display_name = "量酒杯"
+asset_id = &"tool_jigger_placeholder"
+placeholder = true
+capability_tags = Array[StringName]([&"liquid_receiver", &"measuring", &"pour_source"])
+interaction_ids = Array[StringName]([&"measure"])
+capacity_ml = 45.0
+

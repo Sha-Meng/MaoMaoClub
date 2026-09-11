@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="CatBarContentCatalog" load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/cat_bar_content_catalog.gd" id="1"]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/tool_definition.gd" id="2"]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/ingredient_definition.gd" id="3"]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/glass_definition.gd" id="4"]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/interaction_definition.gd" id="5"]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/recipe_definition.gd" id="6"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/tools/shaker.tres" id="tool_shaker"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/tools/jigger.tres" id="tool_jigger"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/tools/bar_spoon.tres" id="tool_spoon"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/moon_gin.tres" id="ingredient_gin"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/dusk_liqueur.tres" id="ingredient_dusk"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/clear_ice.tres" id="ingredient_ice"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/catnip_spice.tres" id="ingredient_spice"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/glasses/coupe_glass.tres" id="glass_coupe"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/pour_direct.tres" id="i_pour"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/drop_ice.tres" id="i_ice"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/sprinkle.tres" id="i_spice"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/measure.tres" id="i_measure"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/stir.tres" id="i_stir"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/toggle_seal.tres" id="i_seal"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/shake.tres" id="i_shake"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/strain_pour.tres" id="i_strain"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/recipes/moonlit_meow.tres" id="recipe"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/default_station_layout.tres" id="layout"]
+
+[resource]
+script = ExtResource("1")
+tools = Array[ExtResource("2")]([ExtResource("tool_shaker"), ExtResource("tool_jigger"), ExtResource("tool_spoon")])
+ingredients = Array[ExtResource("3")]([ExtResource("ingredient_gin"), ExtResource("ingredient_dusk"), ExtResource("ingredient_ice"), ExtResource("ingredient_spice")])
+glasses = Array[ExtResource("4")]([ExtResource("glass_coupe")])
+interactions = Array[ExtResource("5")]([ExtResource("i_pour"), ExtResource("i_ice"), ExtResource("i_spice"), ExtResource("i_measure"), ExtResource("i_stir"), ExtResource("i_seal"), ExtResource("i_shake"), ExtResource("i_strain")])
+recipes = Array[ExtResource("6")]([ExtResource("recipe")])
+station_layout = ExtResource("layout")
+deprecated_ids = {&"old_moon_spirit": &"moon_gin"}
+

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ToolDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/tool_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cat_bar/tools/bar_spoon_generated.png" id="2_spoon"]
+
+[resource]
+script = ExtResource("1")
+content_id = &"bar_spoon"
+display_name = "长柄勺"
+asset_id = &"tool_bar_spoon_placeholder"
+icon_texture = ExtResource("2_spoon")
+placeholder = true
+capability_tags = Array[StringName]([&"stirrer"])
+interaction_ids = Array[StringName]([&"stir"])

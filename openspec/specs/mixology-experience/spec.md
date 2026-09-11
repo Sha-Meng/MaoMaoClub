@@ -5,7 +5,7 @@ TBD - created by archiving change validate-mixology-mvp. Update Purpose after ar
 ## Requirements
 ### Requirement: MVP 顾客与材料
 
-调酒经营 MVP 必须定义三类顾客，并为每类顾客配置一种对应材料掉落。
+调酒经营 MVP MUST 定义三类顾客，并为每类顾客配置一种对应材料掉落。
 
 #### Scenario: 顾客服务结束后离开
 
@@ -18,7 +18,7 @@ TBD - created by archiving change validate-mixology-mvp. Update Purpose after ar
 
 ### Requirement: 材料掉落成长
 
-调酒经营 MVP 必须让同类顾客的材料掉落概率随接待次数成长，并受到上限约束。
+调酒经营 MVP MUST 让同类顾客的材料掉落概率随接待次数成长，并受到上限约束。
 
 #### Scenario: 反复接待同类顾客
 
@@ -28,7 +28,7 @@ TBD - created by archiving change validate-mixology-mvp. Update Purpose after ar
 
 ### Requirement: 调酒研发
 
-调酒经营 MVP 必须允许玩家消耗材料解锁新酒水。
+调酒经营 MVP MUST 允许玩家消耗材料解锁新酒水。
 
 #### Scenario: 研发可解锁酒水
 
@@ -40,7 +40,7 @@ TBD - created by archiving change validate-mixology-mvp. Update Purpose after ar
 
 ### Requirement: 今日菜单
 
-调酒经营 MVP 必须允许玩家把已解锁酒水加入今日菜单，且今日菜单最多包含 10 种酒水。
+调酒经营 MVP MUST 允许玩家把已解锁酒水加入今日菜单，且今日菜单最多包含 10 种酒水。
 
 #### Scenario: 将酒水加入今日菜单
 
@@ -50,7 +50,7 @@ TBD - created by archiving change validate-mixology-mvp. Update Purpose after ar
 
 ### Requirement: 菜单改变经营结果
 
-调酒经营 MVP 必须让今日菜单中的酒水影响至少一种经营结果：顾客出现概率、订单金币、停留时间或消费倍率。
+调酒经营 MVP MUST 让今日菜单中的酒水影响至少一种经营结果：顾客出现概率、订单金币、停留时间或消费倍率。
 
 #### Scenario: 今日菜单偏向某类顾客
 
@@ -60,13 +60,31 @@ TBD - created by archiving change validate-mixology-mvp. Update Purpose after ar
 
 ### Requirement: 调酒 MVP 验证闭环
 
-调酒经营 MVP 必须验证从顾客消费到材料掉落、从材料到酒水研发、从酒水到菜单配置、从菜单配置到客群或收益变化的完整闭环。
+调酒经营 MVP MUST 验证从顾客订单到玩家手动制作与 Neko 送达、从顾客消费到材料掉落、从材料到酒水研发、从酒水到菜单配置、从菜单配置到客群或收益变化的完整闭环。
 
 #### Scenario: 完成一次调酒经营闭环
 
-- WHEN 玩家接待顾客并获得材料
-- AND 玩家研发至少一种新酒水
-- AND 玩家把该酒水放入今日菜单
-- THEN 后续顾客结构或收益结果因为菜单发生变化
-- AND 玩家可以把变化结果与之前的配置进行比较
+- **WHEN** 玩家接到一个当前菜单可制作的顾客订单
+- **AND** 玩家在 CatBar 调酒近景中完成一杯可交付成品
+- **AND** Neko 将成品送达对应顾客且订单完成结算
+- **AND** 玩家从顾客消费获得材料并研发至少一种新酒水
+- **AND** 玩家把该酒水放入今日菜单
+- **THEN** 后续顾客结构或收益结果因为菜单或成品品质发生变化
+- **AND** 玩家可以把变化结果与之前的配置及调酒结果进行比较
+
+### Requirement: 手动调酒交付驱动订单结算
+
+调酒经营体验 MUST 将有效的手动调酒结果和 Neko 送达作为订单完成输入；订单 MUST 只在匹配订单、会话和目标卡座的成品首次送达后结算，品质与偏差标签 MUST 可供奖励或顾客反馈规则读取。
+
+#### Scenario: 合法成品完成订单
+
+- **WHEN** 玩家为活动订单完成可交付成品且 Neko 将其送到匹配卡座
+- **THEN** 对应订单只结算一次
+- **AND** 订单结果包含成品配方、品质和偏差标签
+
+#### Scenario: 无效或未送达成品
+
+- **WHEN** 成品缺少核心条件、尚未倒入目标酒杯或尚未完成送达
+- **THEN** 系统不会结算订单、金币、经验或材料掉落
+- **AND** 玩家可以继续修正、重做或安全取消会话
 

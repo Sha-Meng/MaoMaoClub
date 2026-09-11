@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="IngredientDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/ingredient_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cat_bar/ingredients/dusk_liqueur_bottle_generated.png" id="2_bottle"]
+
+[resource]
+script = ExtResource("1")
+content_id = &"dusk_liqueur"
+display_name = "暮色甜酒"
+asset_id = &"ingredient_dusk_liqueur_placeholder"
+icon_texture = ExtResource("2_bottle")
+placeholder = true
+category = 0
+interaction_id = &"pour_direct"
+default_dose = 30.0
+maximum_stock = -1
+fluid_id = 1
+color = Color(0.88, 0.35, 0.28, 0.78)
+flavor_tags = Array[StringName]([&"fruity", &"sweet"])

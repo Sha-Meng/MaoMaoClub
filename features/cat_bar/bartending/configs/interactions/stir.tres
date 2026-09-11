@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="InteractionDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/interaction_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+interaction_id = &"stir"
+gesture = 3
+strategy_id = &"stir_drag"
+minimum_duration_seconds = 1.5
+maximum_duration_seconds = 12.0
+minimum_distance_pixels = 80.0
+required_subject_tags = Array[StringName]([&"stirrer"])
+required_target_tags = Array[StringName]([&"liquid_receiver"])
+success_feedback_id = &"stirred"
+failure_feedback_id = &"stir_rejected"
+

@@ -5,6 +5,7 @@ const DEFAULT_CONFIG := preload("res://features/cocktail_shaker_lab/configs/defa
 const TEST_WINDOW_SIZE := Vector2i(1200, 700)
 
 @export var test_config: ShakerTestConfig2D = DEFAULT_CONFIG
+@export var embedded_mode: bool = false
 
 var _runtime_config: ShakerTestConfig2D
 var _active_simulation: FluidParticleSimulationConfig2D
@@ -40,10 +41,11 @@ var _ice_to_ice_collision_event_count: int = 0
 
 
 func _ready() -> void:
-	var window := get_window()
-	if window.size.x < TEST_WINDOW_SIZE.x or window.size.y < TEST_WINDOW_SIZE.y:
-		window.size = TEST_WINDOW_SIZE
-	window.min_size = TEST_WINDOW_SIZE
+	if not embedded_mode:
+		var window := get_window()
+		if window.size.x < TEST_WINDOW_SIZE.x or window.size.y < TEST_WINDOW_SIZE.y:
+			window.size = TEST_WINDOW_SIZE
+		window.min_size = TEST_WINDOW_SIZE
 	_runtime_config = _make_runtime_config()
 	var config_errors := _runtime_config.validate()
 	if not config_errors.is_empty():
@@ -53,7 +55,8 @@ func _ready() -> void:
 	_active_simulation = _runtime_config.get_default_simulation()
 	_build_shaker()
 	_build_fluid(_active_simulation)
-	_build_interface()
+	if not embedded_mode:
+		_build_interface()
 	reset_test()
 	if OS.get_cmdline_user_args().has("--shaker-smoke"):
 		call_deferred("_run_headless_smoke")
@@ -128,12 +131,13 @@ func _unhandled_key_input(event: InputEvent) -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, get_viewport_rect().size), Color(0.025, 0.035, 0.052), true)
-	draw_rect(Rect2(Vector2(410.0, 45.0), Vector2(760.0, 610.0)), Color(0.045, 0.062, 0.087), true)
-	for x_position: int in range(430, 1171, 40):
-		draw_line(Vector2(float(x_position), 55.0), Vector2(float(x_position), 645.0), Color(0.08, 0.11, 0.15), 1.0)
-	for y_position: int in range(65, 646, 40):
-		draw_line(Vector2(420.0, float(y_position)), Vector2(1160.0, float(y_position)), Color(0.08, 0.11, 0.15), 1.0)
+	if not embedded_mode:
+		draw_rect(Rect2(Vector2.ZERO, get_viewport_rect().size), Color(0.025, 0.035, 0.052), true)
+		draw_rect(Rect2(Vector2(410.0, 45.0), Vector2(760.0, 610.0)), Color(0.045, 0.062, 0.087), true)
+		for x_position: int in range(430, 1171, 40):
+			draw_line(Vector2(float(x_position), 55.0), Vector2(float(x_position), 645.0), Color(0.08, 0.11, 0.15), 1.0)
+		for y_position: int in range(65, 646, 40):
+			draw_line(Vector2(420.0, float(y_position)), Vector2(1160.0, float(y_position)), Color(0.08, 0.11, 0.15), 1.0)
 	if _container_adapter == null or _container_adapter.container_shape == null or _shaker == null:
 		return
 	var shape := _container_adapter.container_shape
@@ -452,6 +456,63 @@ func get_fluid_local_bounds() -> Rect2:
 
 func get_fluid_snapshot() -> ParticleFluidSnapshot2D:
 	return ParticleFluidSnapshot2D.new() if _fluid == null else _fluid.get_state_snapshot()
+
+
+func get_fluid_local_snapshot() -> ParticleFluidSnapshot2D:
+	var world_snapshot := get_fluid_snapshot()
+	var local_snapshot := world_snapshot.duplicate_snapshot()
+	if _shaker == null or _active_simulation == null:
+		return local_snapshot
+	var inverse := _shaker.global_transform.affine_inverse()
+	var ppm := _active_simulation.particle_config.pixels_per_meter
+	for index: int in range(local_snapshot.count()):
+		local_snapshot.positions_meters[index] = (
+			inverse * (world_snapshot.positions_meters[index] * ppm)
+		) / ppm
+		local_snapshot.velocities_meters_per_second[index] = (
+			world_snapshot.velocities_meters_per_second[index]
+		).rotated(-_shaker.global_rotation)
+	return local_snapshot
+
+
+func get_ice_local_positions_meters() -> PackedVector2Array:
+	var positions := PackedVector2Array()
+	if _shaker == null or _active_simulation == null:
+		return positions
+	var inverse := _shaker.global_transform.affine_inverse()
+	var ppm := _active_simulation.particle_config.pixels_per_meter
+	for body: BuoyantBodyAdapter2D in _ice_bodies:
+		if is_instance_valid(body):
+			positions.append((inverse * body.global_position) / ppm)
+	return positions
+
+
+func get_ice_local_rotations_radians() -> PackedFloat32Array:
+	var rotations := PackedFloat32Array()
+	if _shaker == null:
+		return rotations
+	for body: BuoyantBodyAdapter2D in _ice_bodies:
+		if is_instance_valid(body):
+			rotations.append(angle_difference(_shaker.global_rotation, body.global_rotation))
+	return rotations
+
+
+func get_vessel_size_meters() -> Vector2:
+	if _runtime_config == null:
+		return Vector2.ONE
+	return Vector2(_runtime_config.vessel.width_meters, _runtime_config.vessel.height_meters)
+
+
+func get_ice_size_meters() -> Vector2:
+	return Vector2.ZERO if _runtime_config == null else _runtime_config.ice.size_meters
+
+
+func get_ice_color() -> Color:
+	return Color(0.78, 0.94, 1.0, 0.78) if _runtime_config == null else _runtime_config.ice.color
+
+
+func get_ice_outline_color() -> Color:
+	return Color(0.9, 0.98, 1.0, 0.9) if _runtime_config == null else _runtime_config.ice.outline_color
 
 
 func get_runtime_config() -> ShakerTestConfig2D:

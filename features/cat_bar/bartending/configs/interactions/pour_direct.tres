@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="InteractionDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/interaction_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+interaction_id = &"pour_direct"
+gesture = 0
+strategy_id = &"pour_fixed_dose"
+dose_multiplier = 1.0
+required_subject_tags = Array[StringName]([&"liquid"])
+required_target_tags = Array[StringName]([&"liquid_receiver"])
+success_feedback_id = &"liquid_poured"
+failure_feedback_id = &"pour_rejected"
+

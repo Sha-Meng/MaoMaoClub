@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="InteractionDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/interaction_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+interaction_id = &"toggle_seal"
+gesture = 4
+strategy_id = &"seal_toggle"
+required_subject_tags = Array[StringName]([&"sealable"])
+success_feedback_id = &"seal_toggled"
+failure_feedback_id = &"seal_rejected"
+

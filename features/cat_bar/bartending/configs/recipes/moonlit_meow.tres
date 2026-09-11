@@ -1,0 +1,89 @@
+[gd_resource type="Resource" script_class="RecipeDefinition" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/recipe_definition.gd" id="1_recipe"]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/recipe_step_definition.gd" id="2_step"]
+
+[sub_resource type="Resource" id="StepPourGin"]
+script = ExtResource("2_step")
+step_id = &"pour_moon_gin"
+interaction_id = &"pour_direct"
+subject_id = &"moon_gin"
+target_id = &"jigger"
+expected_amount = 30.0
+tolerance = 2.0
+
+[sub_resource type="Resource" id="StepMeasure"]
+script = ExtResource("2_step")
+step_id = &"measure_into_shaker"
+interaction_id = &"measure"
+subject_id = &"jigger"
+target_id = &"shaker"
+expected_amount = 30.0
+tolerance = 2.0
+
+[sub_resource type="Resource" id="StepPourDusk"]
+script = ExtResource("2_step")
+step_id = &"pour_dusk_liqueur"
+interaction_id = &"pour_direct"
+subject_id = &"dusk_liqueur"
+target_id = &"shaker"
+expected_amount = 30.0
+tolerance = 2.0
+
+[sub_resource type="Resource" id="StepIce"]
+script = ExtResource("2_step")
+step_id = &"add_ice"
+interaction_id = &"drop_ice"
+subject_id = &"clear_ice"
+target_id = &"shaker"
+expected_amount = 2.0
+tolerance = 0.0
+
+[sub_resource type="Resource" id="StepSpice"]
+script = ExtResource("2_step")
+step_id = &"add_catnip"
+interaction_id = &"sprinkle"
+subject_id = &"catnip_spice"
+target_id = &"shaker"
+expected_amount = 1.0
+tolerance = 0.0
+
+[sub_resource type="Resource" id="StepSeal"]
+script = ExtResource("2_step")
+step_id = &"seal_shaker"
+interaction_id = &"toggle_seal"
+subject_id = &"shaker"
+target_id = &"shaker"
+expected_amount = 1.0
+
+[sub_resource type="Resource" id="StepShake"]
+script = ExtResource("2_step")
+step_id = &"shake_mix"
+interaction_id = &"shake"
+subject_id = &"shaker"
+target_id = &"shaker"
+expected_amount = 4.0
+tolerance = 2.0
+
+[sub_resource type="Resource" id="StepStrain"]
+script = ExtResource("2_step")
+step_id = &"strain_to_glass"
+interaction_id = &"strain_pour"
+subject_id = &"shaker"
+target_id = &"coupe_glass"
+expected_amount = 60.0
+tolerance = 5.0
+
+[resource]
+script = ExtResource("1_recipe")
+content_id = &"moonlit_meow"
+display_name = "月夜猫语"
+asset_id = &"drink_moonlit_meow_placeholder"
+placeholder = true
+target_glass_id = &"coupe_glass"
+steps = Array[ExtResource("2_step")]([SubResource("StepPourGin"), SubResource("StepMeasure"), SubResource("StepPourDusk"), SubResource("StepIce"), SubResource("StepSpice"), SubResource("StepSeal"), SubResource("StepShake"), SubResource("StepStrain")])
+minimum_quality_to_serve = 35
+ingredient_weight = 0.55
+action_weight = 0.3
+glass_weight = 0.15
+

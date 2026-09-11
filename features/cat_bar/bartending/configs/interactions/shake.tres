@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="InteractionDefinition" load_steps=2 format=3]
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/interaction_definition.gd" id="1"]
+[resource]
+script = ExtResource("1")
+interaction_id = &"shake"
+gesture = 5
+strategy_id = &"shake_drag"
+minimum_duration_seconds = 2.0
+maximum_duration_seconds = 12.0
+minimum_distance_pixels = 240.0
+required_subject_tags = Array[StringName]([&"shakeable", &"sealable"])
+success_feedback_id = &"shake_completed"
+failure_feedback_id = &"shake_rejected"
+
