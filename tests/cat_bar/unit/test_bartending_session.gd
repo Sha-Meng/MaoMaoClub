@@ -22,7 +22,8 @@ func _make_session() -> BartendingSessionState:
 func _submit_standard_recipe(session: BartendingSessionState, gin_amount: float = 30.0) -> void:
 	session.submit_command(InteractionCommand.new(&"moon_gin", &"jigger", &"pour_direct", gin_amount))
 	session.submit_command(InteractionCommand.new(&"jigger", &"shaker", &"measure", 0.0, InteractionDefinition.Gesture.DRAG))
-	session.submit_command(InteractionCommand.new(&"dusk_liqueur", &"shaker", &"pour_direct", 30.0))
+	session.submit_command(InteractionCommand.new(&"dusk_liqueur", &"jigger", &"pour_direct", 30.0))
+	session.submit_command(InteractionCommand.new(&"jigger", &"shaker", &"measure", 0.0, InteractionDefinition.Gesture.DRAG))
 	session.submit_command(InteractionCommand.new(&"clear_ice", &"shaker", &"drop_ice", 1.0))
 	session.submit_command(InteractionCommand.new(&"clear_ice", &"shaker", &"drop_ice", 1.0))
 	session.submit_command(InteractionCommand.new(&"catnip_spice", &"shaker", &"sprinkle", 1.0))
@@ -83,4 +84,3 @@ func _test_illegal_state_and_cancel(suite: CatBarTestSuite) -> void:
 	suite.expect_equal(session.state, BartendingSessionState.State.CANCELLED, "取消后状态必须明确")
 	suite.expect_equal(session.get_step_log().size(), 0, "取消应清理临时步骤")
 	suite.expect_near(session.get_draft_snapshot().total_amount(&"shaker"), 0.0, 0.001, "取消应清空临时容器")
-

@@ -13,6 +13,10 @@
 [ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/dusk_liqueur.tres" id="ingredient_dusk"]
 [ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/clear_ice.tres" id="ingredient_ice"]
 [ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/catnip_spice.tres" id="ingredient_spice"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/sunset_whiskey.tres" id="ingredient_whiskey"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/dawn_vodka.tres" id="ingredient_vodka"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/daybreak_white_rum.tres" id="ingredient_rum"]
+[ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/ingredients/premium_fish_oil.tres" id="ingredient_fish_oil"]
 [ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/glasses/coupe_glass.tres" id="glass_coupe"]
 [ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/pour_direct.tres" id="i_pour"]
 [ext_resource type="Resource" path="res://features/cat_bar/bartending/configs/interactions/drop_ice.tres" id="i_ice"]
@@ -28,10 +32,9 @@
 [resource]
 script = ExtResource("1")
 tools = Array[ExtResource("2")]([ExtResource("tool_shaker"), ExtResource("tool_jigger"), ExtResource("tool_spoon")])
-ingredients = Array[ExtResource("3")]([ExtResource("ingredient_gin"), ExtResource("ingredient_dusk"), ExtResource("ingredient_ice"), ExtResource("ingredient_spice")])
+ingredients = Array[ExtResource("3")]([ExtResource("ingredient_gin"), ExtResource("ingredient_dusk"), ExtResource("ingredient_whiskey"), ExtResource("ingredient_vodka"), ExtResource("ingredient_rum"), ExtResource("ingredient_ice"), ExtResource("ingredient_spice"), ExtResource("ingredient_fish_oil")])
 glasses = Array[ExtResource("4")]([ExtResource("glass_coupe")])
 interactions = Array[ExtResource("5")]([ExtResource("i_pour"), ExtResource("i_ice"), ExtResource("i_spice"), ExtResource("i_measure"), ExtResource("i_stir"), ExtResource("i_seal"), ExtResource("i_shake"), ExtResource("i_strain")])
 recipes = Array[ExtResource("6")]([ExtResource("recipe")])
 station_layout = ExtResource("layout")
 deprecated_ids = {&"old_moon_spirit": &"moon_gin"}
-

@@ -1,12 +1,14 @@
-[gd_resource type="Resource" script_class="IngredientDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="IngredientDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://features/cat_bar/bartending/config/ingredient_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cat_bar/ingredients/clear_ice_generated.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1")
 content_id = &"clear_ice"
-display_name = "透明方冰"
+display_name = "冰块"
 asset_id = &"ingredient_ice_placeholder"
+icon_texture = ExtResource("2_icon")
 placeholder = true
 category = 1
 interaction_id = &"drop_ice"
@@ -15,4 +17,3 @@ maximum_stock = -1
 fluid_id = -1
 color = Color(0.72, 0.92, 1, 0.78)
 flavor_tags = Array[StringName]([&"cold"])
-

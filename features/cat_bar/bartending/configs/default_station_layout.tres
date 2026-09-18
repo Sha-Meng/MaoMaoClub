@@ -22,13 +22,40 @@ allowed_categories = Array[StringName]([&"liquid"])
 anchor_pixels = Vector2i(125, 82)
 sort_order = 1
 
+[sub_resource type="Resource" id="SlotWhiskey"]
+script = ExtResource("3_slot")
+slot_id = &"sunset_whiskey_slot"
+content_kind = &"ingredient"
+content_id = &"sunset_whiskey"
+allowed_categories = Array[StringName]([&"liquid"])
+anchor_pixels = Vector2i(230, 82)
+sort_order = 2
+
+[sub_resource type="Resource" id="SlotVodka"]
+script = ExtResource("3_slot")
+slot_id = &"dawn_vodka_slot"
+content_kind = &"ingredient"
+content_id = &"dawn_vodka"
+allowed_categories = Array[StringName]([&"liquid"])
+anchor_pixels = Vector2i(335, 82)
+sort_order = 3
+
+[sub_resource type="Resource" id="SlotRum"]
+script = ExtResource("3_slot")
+slot_id = &"daybreak_white_rum_slot"
+content_kind = &"ingredient"
+content_id = &"daybreak_white_rum"
+allowed_categories = Array[StringName]([&"liquid"])
+anchor_pixels = Vector2i(440, 82)
+sort_order = 4
+
 [sub_resource type="Resource" id="ZoneLiquids"]
 script = ExtResource("2_zone")
 zone_id = &"liquid_zone"
 display_name = "酒液区"
 allowed_categories = Array[StringName]([&"liquid"])
 sort_order = 0
-slots = Array[ExtResource("3_slot")]([SubResource("SlotMoonGin"), SubResource("SlotDusk")])
+slots = Array[ExtResource("3_slot")]([SubResource("SlotMoonGin"), SubResource("SlotDusk"), SubResource("SlotWhiskey"), SubResource("SlotVodka"), SubResource("SlotRum")])
 
 [sub_resource type="Resource" id="SlotIce"]
 script = ExtResource("3_slot")
@@ -54,13 +81,22 @@ content_id = &"catnip_spice"
 allowed_categories = Array[StringName]([&"spice"])
 anchor_pixels = Vector2i(335, 82)
 
+[sub_resource type="Resource" id="SlotFishOil"]
+script = ExtResource("3_slot")
+slot_id = &"premium_fish_oil_slot"
+content_kind = &"ingredient"
+content_id = &"premium_fish_oil"
+allowed_categories = Array[StringName]([&"spice"])
+anchor_pixels = Vector2i(440, 82)
+sort_order = 1
+
 [sub_resource type="Resource" id="ZoneSpices"]
 script = ExtResource("2_zone")
 zone_id = &"spice_zone"
 display_name = "香料区"
 allowed_categories = Array[StringName]([&"spice"])
 sort_order = 2
-slots = Array[ExtResource("3_slot")]([SubResource("SlotSpice")])
+slots = Array[ExtResource("3_slot")]([SubResource("SlotSpice"), SubResource("SlotFishOil")])
 
 [sub_resource type="Resource" id="SlotShaker"]
 script = ExtResource("3_slot")

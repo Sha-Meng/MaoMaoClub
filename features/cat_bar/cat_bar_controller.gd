@@ -202,13 +202,16 @@ func _phone_allowed() -> bool:
 
 func _on_camera_transition_finished(target_mode: CatBarModeController.Mode) -> void:
 	if target_mode == CatBarModeController.Mode.MIXING:
+		_bar_hotspot.visible = false
 		_bartending_station.visible = true
 		_mode_controller.request_mode(CatBarModeController.Mode.MIXING)
 	elif target_mode == CatBarModeController.Mode.OVERVIEW:
 		_bartending_station.visible = false
+		_bar_hotspot.visible = true
 		_mode_controller.request_mode(CatBarModeController.Mode.OVERVIEW)
 	elif target_mode == CatBarModeController.Mode.SERVING:
 		_bartending_station.visible = false
+		_bar_hotspot.visible = false
 
 
 func _on_mode_changed(_previous: CatBarModeController.Mode, current: CatBarModeController.Mode) -> void:

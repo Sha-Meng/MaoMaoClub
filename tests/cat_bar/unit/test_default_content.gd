@@ -28,7 +28,7 @@ func _test_default_catalog(suite: CatBarTestSuite) -> void:
 	registry.build(catalog)
 	var counts := registry.counts()
 	suite.expect_equal(counts[&"tools"], 3, "首批应有三个器具")
-	suite.expect_equal(counts[&"ingredients"], 4, "首批应有两种酒液、冰和香料")
+	suite.expect_equal(counts[&"ingredients"], 8, "默认内容应有五种基酒和三种辅料")
 	suite.expect_equal(counts[&"glasses"], 1, "首批应有一个目标酒杯")
 	suite.expect_equal(counts[&"interactions"], 8, "首批应覆盖八种交互")
 	suite.expect_equal(counts[&"recipes"], 1, "首批应有一个代表性配方")
@@ -37,3 +37,10 @@ func _test_default_catalog(suite: CatBarTestSuite) -> void:
 	suite.expect_true(registry.get_ingredient(&"dusk_liqueur").icon_texture != null, "暮色甜酒必须绑定不同瓶身纹理")
 	suite.expect_true(registry.get_tool(&"bar_spoon").icon_texture != null, "长柄勺必须绑定拖拽纹理")
 	suite.expect_true(registry.get_ingredient(&"moon_gin").icon_texture != registry.get_ingredient(&"dusk_liqueur").icon_texture, "两种酒液不得共用同一瓶身纹理")
+	for content_id: StringName in [&"sunset_whiskey", &"dawn_vodka", &"daybreak_white_rum", &"clear_ice", &"catnip_spice", &"premium_fish_oil"]:
+		var ingredient := registry.get_ingredient(content_id)
+		suite.expect_true(ingredient != null, "扩展内容缺少 %s" % content_id)
+		if ingredient != null:
+			suite.expect_true(ingredient.icon_texture != null, "%s 必须绑定菜单图片" % content_id)
+	for tool_id: StringName in [&"shaker", &"jigger", &"bar_spoon"]:
+		suite.expect_true(registry.get_tool(tool_id).icon_texture != null, "%s 必须绑定菜单图片" % tool_id)

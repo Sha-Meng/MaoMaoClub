@@ -29,11 +29,13 @@ func evaluate(
 			else:
 				action_scores.append(0.0)
 			continue
-		var first_index := step_log.find(matches[0])
-		if first_index < previous_step_index:
+		# 聚合步骤（如两次量酒或两块冰）以最后一次匹配作为完成时刻，
+		# 避免同类动作分批执行时被错误标记为顺序颠倒。
+		var completion_index := step_log.find(matches[matches.size() - 1])
+		if completion_index < previous_step_index:
 			result.differences.append("步骤顺序错误：%s" % step.step_id)
 			result.tags.append(&"wrong_order")
-		previous_step_index = maxi(previous_step_index, step_log.find(matches[matches.size() - 1]))
+		previous_step_index = maxi(previous_step_index, completion_index)
 		var actual_amount := 0.0
 		for matched: BartendingStepLog in matches:
 			actual_amount += matched.amount

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="IngredientDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/ingredient_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cat_bar/ingredients/premium_fish_oil_generated.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1")
+content_id = &"premium_fish_oil"
+display_name = "特级鱼油"
+asset_id = &"ingredient_premium_fish_oil_generated"
+icon_texture = ExtResource("2_icon")
+placeholder = true
+category = 2
+interaction_id = &"sprinkle"
+default_dose = 1.0
+maximum_stock = -1
+fluid_id = -1
+color = Color(1, 0.64, 0.12, 0.92)
+flavor_tags = Array[StringName]([&"umami", &"rich", &"marine"])
+

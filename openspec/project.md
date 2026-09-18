@@ -35,10 +35,10 @@ model are still to be defined in `design/`.
 
 ## Current Game State
 
-- Runtime entry point: `res://scenes/main.tscn`.
-- Current main scene is intentionally empty.
-- No gameplay feature has been formally specified yet.
-- Directory planning is documented in `docs/project-structure-plan.md`.
+- Runtime entry point: `res://app/main.tscn`，通过功能开关装配 CatBar，并保留旧 TavernLoop 回退。
+- CatBar 已具备调酒、Shake 流体表现、服务送达、卡座氛围、手机微信和 v2 存档纵向切片。
+- 当前有效玩法规格位于 `openspec/specs/`，CatBar 开发说明位于 `docs/cat-bar-development.md`。
+- 默认开发目标仍为 Windows 上的 960×540、60 physics tick 像素酒吧体验。
 
 ## Source Of Truth
 

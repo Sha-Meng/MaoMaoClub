@@ -84,10 +84,8 @@ layer = 5
 
 [node name="BartendingStation" parent="BartendingLayer" instance=ExtResource("4_station")]
 unique_name_in_owner = true
-offset_left = 100.0
-offset_top = 88.0
-offset_right = 860.0
-offset_bottom = 428.0
+offset_right = 960.0
+offset_bottom = 540.0
 
 [node name="HudLayer" type="CanvasLayer" parent="."]
 layer = 10

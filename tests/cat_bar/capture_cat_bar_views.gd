@@ -22,8 +22,22 @@ func _run() -> void:
 	await process_frame
 	_capture("res://.work/cat_bar_mixing.png")
 	var station := cat_bar.get_bartending_station()
-	station.click_content(&"moon_gin")
-	station.toggle_seal()
+	station.begin_drag_for_test(&"moon_gin")
+	await process_frame
+	_capture("res://.work/cat_bar_drag_spirit.png")
+	station.cancel_drag_for_test()
+	station.simulate_drop_for_test(&"moon_gin", &"jigger")
+	station.begin_drag_for_test(&"jigger")
+	await process_frame
+	_capture("res://.work/cat_bar_drag_jigger.png")
+	station.cancel_drag_for_test()
+	station.simulate_drop_for_test(&"jigger", &"shaker")
+	station.simulate_drop_for_test(&"clear_ice", &"shaker")
+	station.begin_drag_for_test(&"shaker_lid")
+	await process_frame
+	_capture("res://.work/cat_bar_drag_lid.png")
+	station.cancel_drag_for_test()
+	station.simulate_drop_for_test(&"shaker_lid", &"shaker")
 	station.begin_shake()
 	var adapter := station.get_node("MixingVesselAdapter") as MixingVesselAdapter
 	for index: int in range(6):
@@ -38,8 +52,10 @@ func _run() -> void:
 	_capture("res://.work/cat_bar_shake_reverse.png")
 	station.reset_session()
 	_complete_recipe(station)
-	station.pour_to_glass()
-	await create_timer(0.64).timeout
+	station.pour_to_glass(false)
+	await create_timer(0.46).timeout
+	_capture("res://.work/cat_bar_finished_glass.png")
+	await create_timer(0.56).timeout
 	_capture("res://.work/cat_bar_service_handoff.png")
 	await create_timer(0.62).timeout
 	_capture("res://.work/cat_bar_worker_delivery.png")
@@ -68,13 +84,13 @@ func _run() -> void:
 
 
 func _complete_recipe(station: BartendingStation) -> void:
-	station.click_content(&"jigger")
-	station.click_content(&"moon_gin")
-	station.click_content(&"jigger")
-	station.click_content(&"dusk_liqueur")
-	station.click_content(&"clear_ice")
-	station.click_content(&"clear_ice")
-	station.click_content(&"catnip_spice")
+	station.simulate_drop_for_test(&"moon_gin", &"jigger")
+	station.simulate_drop_for_test(&"jigger", &"shaker")
+	station.simulate_drop_for_test(&"dusk_liqueur", &"jigger")
+	station.simulate_drop_for_test(&"jigger", &"shaker")
+	station.simulate_drop_for_test(&"clear_ice", &"shaker")
+	station.simulate_drop_for_test(&"clear_ice", &"shaker")
+	station.simulate_drop_for_test(&"catnip_spice", &"shaker")
 	station.submit_stir_gesture(120.0, 2.0)
 	station.toggle_seal()
 	station.complete_shake_for_test({&"duration": 4.0, &"distance": 320.0, &"reversals": 8.0, &"peak_speed": 420.0})
