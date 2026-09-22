@@ -87,6 +87,10 @@ func get_actor(visitor_id: int) -> PatronAmbienceActor:
 	return null
 
 
+func get_active_actors() -> Array[PatronAmbienceActor]:
+	return _active.duplicate()
+
+
 func _obtain_actor() -> PatronAmbienceActor:
 	if not _pool.is_empty():
 		return _pool.pop_back()

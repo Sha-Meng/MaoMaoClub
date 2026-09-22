@@ -14,6 +14,7 @@ var _name_label: Label
 var _highlighted: bool = false
 var _highlight_strong: bool = false
 var _ready_hint: bool = false
+var _visual_visible: bool = true
 
 
 func configure(
@@ -78,6 +79,25 @@ func set_ready_hint(value: bool) -> void:
 	queue_redraw()
 
 
+func set_visual_visible(value: bool) -> void:
+	_visual_visible = value
+	if _icon != null:
+		_icon.visible = value
+	if _name_label != null:
+		_name_label.visible = value
+	queue_redraw()
+
+
+func set_icon_texture(texture: Texture2D) -> void:
+	if _icon != null:
+		_icon.texture = texture
+
+
+func set_name_visible(value: bool) -> void:
+	if _name_label != null:
+		_name_label.visible = value
+
+
 func reset_to_home() -> void:
 	position = home_position
 	rotation = 0.0
@@ -90,6 +110,8 @@ func contains_global_point(point: Vector2) -> bool:
 
 
 func _draw() -> void:
+	if not _visual_visible and not _highlighted:
+		return
 	if _ready_hint:
 		draw_rect(Rect2(Vector2(-5.0, -5.0), size + Vector2(10.0, 10.0)), Color(1.0, 0.73, 0.28, 0.13), true)
 		draw_rect(Rect2(Vector2(-4.0, -4.0), size + Vector2(8.0, 8.0)), Color(1.0, 0.74, 0.3, 0.72), false, 2.0)

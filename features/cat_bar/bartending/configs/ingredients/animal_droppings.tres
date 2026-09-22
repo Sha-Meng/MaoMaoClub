@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="IngredientDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://features/cat_bar/bartending/config/ingredient_definition.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/cat_bar/ingredients/animal_droppings_generated.png" id="2"]
+
+[resource]
+script = ExtResource("1")
+content_id = &"animal_droppings"
+display_name = "动物的神秘馈赠"
+asset_id = &"ingredient_animal_droppings_generated"
+icon_texture = ExtResource("2")
+tags = Array[StringName]([&"animal", &"novelty"])
+category = 2
+interaction_id = &"sprinkle"
+default_dose = 1.0
+maximum_stock = -1
+fluid_id = -1
+color = Color(0.42, 0.18, 0.08, 1)
+flavor_tags = Array[StringName]([&"wild", &"earthy"])

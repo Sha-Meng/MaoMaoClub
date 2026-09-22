@@ -28,7 +28,7 @@ func _test_default_catalog(suite: CatBarTestSuite) -> void:
 	registry.build(catalog)
 	var counts := registry.counts()
 	suite.expect_equal(counts[&"tools"], 3, "首批应有三个器具")
-	suite.expect_equal(counts[&"ingredients"], 8, "默认内容应有五种基酒和三种辅料")
+	suite.expect_equal(counts[&"ingredients"], 9, "默认内容应有五种基酒、三种吧台辅料和一种动物掉落物")
 	suite.expect_equal(counts[&"glasses"], 1, "首批应有一个目标酒杯")
 	suite.expect_equal(counts[&"interactions"], 8, "首批应覆盖八种交互")
 	suite.expect_equal(counts[&"recipes"], 1, "首批应有一个代表性配方")

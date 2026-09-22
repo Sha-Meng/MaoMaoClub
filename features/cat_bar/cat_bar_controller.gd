@@ -38,7 +38,6 @@ func _ready() -> void:
 	_mode_controller.focus_owner_changed.connect(_apply_focus_owner)
 	_camera_controller.setup(_camera)
 	_camera_controller.transition_finished.connect(_on_camera_transition_finished)
-	_bar_hotspot.pressed.connect(enter_mixing)
 	_bartending_station.drink_ready.connect(_on_drink_ready)
 	_bartending_station.exit_requested.connect(_on_bartending_exit_requested)
 	_neko.configure_handoff(_pickup_marker)
@@ -51,24 +50,33 @@ func _ready() -> void:
 	_wechat.state_changed.connect(_on_wechat_state_changed)
 	_phone_shell.open_requested.connect(open_phone)
 	_phone_shell.close_requested.connect(close_phone)
+	_patron_ambience.patron_entered.connect(_on_patron_roster_changed)
+	_patron_ambience.patron_left.connect(_on_patron_roster_changed)
 	_setup_standalone_services()
 	_style_world_controls()
-	_bartending_station.visible = false
+	_bar_hotspot.visible = false
+	_bartending_station.visible = true
 	_phone_shell.set_open(false)
+	_sync_scene_grab_sources()
 	_apply_focus_owner(&"world")
 	_update_mode_label()
 
 
 func enter_mixing(instant: bool = false) -> bool:
-	if not _mode_controller.request_mode(CatBarModeController.Mode.ENTERING_MIXING):
+	# 兼容旧调用：场景直取模式不再切镜头或等待进入调酒台。
+	if _mode_controller.mode != CatBarModeController.Mode.OVERVIEW:
 		return false
-	if _bartending_station.prepare_for_entry():
-		_refresh_active_order()
-	_camera_controller.transition_to_mixing(instant)
+	_bartending_station.visible = true
+	_sync_scene_grab_sources()
 	return true
 
 
 func exit_mixing(instant: bool = false) -> bool:
+	if _mode_controller.mode == CatBarModeController.Mode.OVERVIEW:
+		_bartending_station.reset_session()
+		_refresh_active_order()
+		_sync_scene_grab_sources()
+		return true
 	if _mode_controller.mode != CatBarModeController.Mode.MIXING and _mode_controller.mode != CatBarModeController.Mode.SERVING:
 		return false
 	if not _mode_controller.request_mode(CatBarModeController.Mode.RETURNING_OVERVIEW):
@@ -192,9 +200,9 @@ func get_phone_shell() -> PhoneShell:
 
 
 func _phone_allowed() -> bool:
-	if _mode_controller.mode == CatBarModeController.Mode.OVERVIEW:
-		return true
-	if _mode_controller.mode != CatBarModeController.Mode.MIXING:
+	if _mode_controller.mode != CatBarModeController.Mode.OVERVIEW and _mode_controller.mode != CatBarModeController.Mode.MIXING:
+		return false
+	if _bartending_station.is_animal_sequence_playing():
 		return false
 	var session_state := _bartending_station.get_session().state
 	return session_state != BartendingSessionState.State.SHAKING and session_state != BartendingSessionState.State.POURING
@@ -204,10 +212,16 @@ func _on_camera_transition_finished(target_mode: CatBarModeController.Mode) -> v
 	if target_mode == CatBarModeController.Mode.MIXING:
 		_bar_hotspot.visible = false
 		_bartending_station.visible = true
+		_patron_ambience.set_suspended(true)
+		_sync_scene_grab_sources()
 		_mode_controller.request_mode(CatBarModeController.Mode.MIXING)
 	elif target_mode == CatBarModeController.Mode.OVERVIEW:
-		_bartending_station.visible = false
-		_bar_hotspot.visible = true
+		_bar_hotspot.visible = false
+		_bartending_station.visible = true
+		_patron_ambience.set_suspended(false)
+		if _bartending_station.prepare_for_entry():
+			_refresh_active_order()
+		_sync_scene_grab_sources()
 		_mode_controller.request_mode(CatBarModeController.Mode.OVERVIEW)
 	elif target_mode == CatBarModeController.Mode.SERVING:
 		_bartending_station.visible = false
@@ -222,7 +236,9 @@ func _on_mode_changed(_previous: CatBarModeController.Mode, current: CatBarModeC
 func _apply_focus_owner(owner_id: StringName) -> void:
 	_bar_hotspot.disabled = owner_id != &"world"
 	_phone_shell.set_entry_enabled(owner_id == &"world" or owner_id == &"bartending")
-	_bartending_station.mouse_filter = Control.MOUSE_FILTER_STOP if owner_id == &"bartending" else Control.MOUSE_FILTER_IGNORE
+	var direct_bartending_focus := owner_id == &"world" or owner_id == &"bartending"
+	_bartending_station.mouse_filter = Control.MOUSE_FILTER_PASS if direct_bartending_focus else Control.MOUSE_FILTER_IGNORE
+	_bartending_station.set_pointer_enabled(direct_bartending_focus)
 
 
 func _on_drink_ready(result: DrinkResult) -> void:
@@ -279,6 +295,11 @@ func _on_worker_delivery_completed(
 func _on_bartending_exit_requested(instant: bool) -> void:
 	_counter_drink.take_drink()
 	save_now()
+	if _mode_controller.mode == CatBarModeController.Mode.OVERVIEW:
+		_bartending_station.prepare_for_entry()
+		_refresh_active_order()
+		_sync_scene_grab_sources()
+		return
 	exit_mixing(instant)
 
 
@@ -298,7 +319,7 @@ func _refresh_active_order() -> void:
 
 func _update_mode_label() -> void:
 	if _mode_label != null:
-		_mode_label.text = "模式：%s" % CatBarModeController.Mode.keys()[_mode_controller.mode]
+		_mode_label.text = "模式：场景调酒" if _mode_controller.mode == CatBarModeController.Mode.OVERVIEW else "模式：%s" % CatBarModeController.Mode.keys()[_mode_controller.mode]
 
 
 func _on_wechat_state_changed() -> void:
@@ -324,3 +345,19 @@ func _style_world_controls() -> void:
 	_mode_label.add_theme_color_override("font_color", Color("f6d8a2"))
 	_mode_label.add_theme_color_override("font_outline_color", Color(0.04, 0.02, 0.025, 0.95))
 	_mode_label.add_theme_constant_override("outline_size", 5)
+
+
+func _sync_scene_grab_sources() -> void:
+	var sources: Dictionary[StringName, Node2D] = {
+		&"bartender_cat": _neko,
+		&"worker_cat": _worker_cat,
+	}
+	for actor: PatronAmbienceActor in _patron_ambience.get_active_actors():
+		sources[StringName("patron_%d" % actor.visitor_id)] = actor
+	_bartending_station.configure_scene_grab_sources(sources)
+
+
+func _on_patron_roster_changed(_arg1: Variant, _arg2: Variant = null, _arg3: Variant = null) -> void:
+	if _bartending_station.has_active_drag():
+		return
+	_sync_scene_grab_sources()

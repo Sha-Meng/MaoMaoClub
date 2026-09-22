@@ -68,7 +68,7 @@ func _focus_for_mode(value: Mode) -> StringName:
 func _is_transition_allowed(from: Mode, to: Mode) -> bool:
 	match from:
 		Mode.OVERVIEW:
-			return to == Mode.ENTERING_MIXING or to == Mode.PHONE_OPEN
+			return to == Mode.ENTERING_MIXING or to == Mode.SERVING or to == Mode.PHONE_OPEN
 		Mode.ENTERING_MIXING:
 			return to == Mode.MIXING or to == Mode.RETURNING_OVERVIEW
 		Mode.MIXING:
@@ -78,4 +78,3 @@ func _is_transition_allowed(from: Mode, to: Mode) -> bool:
 		Mode.RETURNING_OVERVIEW:
 			return to == Mode.OVERVIEW
 	return false
-

@@ -18,11 +18,20 @@ func _run() -> void:
 	patrons.spawn_now()
 	await process_frame
 	_capture("res://.work/cat_bar_overview.png")
-	cat_bar.enter_mixing(true)
-	await process_frame
-	_capture("res://.work/cat_bar_mixing.png")
+	_capture("res://.work/cat_bar_direct_bartending.png")
 	var station := cat_bar.get_bartending_station()
+	station.begin_drag_for_test(&"bartender_cat")
+	station.move_active_drag_for_test(Vector2(737.0, 150.0))
+	await process_frame
+	_capture("res://.work/cat_bar_drag_animal.png")
+	station.finish_active_drag_on_target_for_test()
+	await create_timer(0.52).timeout
+	_capture("res://.work/cat_bar_animal_droppings.png")
+	await create_timer(0.31).timeout
+	_capture("res://.work/cat_bar_bury_litter.png")
+	await create_timer(1.0).timeout
 	station.begin_drag_for_test(&"moon_gin")
+	station.move_active_drag_for_test(Vector2(626.0, 190.0))
 	await process_frame
 	_capture("res://.work/cat_bar_drag_spirit.png")
 	station.cancel_drag_for_test()

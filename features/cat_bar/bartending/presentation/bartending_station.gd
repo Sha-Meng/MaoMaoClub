@@ -11,6 +11,8 @@ const DiegeticDragItem = preload("res://features/cat_bar/bartending/presentation
 const ServingGlassViewType = preload("res://features/cat_bar/bartending/presentation/serving_glass_view.gd")
 const SHAKER_LID_TEXTURE: Texture2D = preload("res://assets/cat_bar/tools/shaker_lid_generated.png")
 const SHAKER_OPEN_TEXTURE: Texture2D = preload("res://assets/cat_bar/tools/shaker_open_generated.png")
+const CAT_PAWS_TEXTURE: Texture2D = preload("res://assets/cat_bar/ui/cat_paws_cursor_generated.png")
+const ANIMAL_DROPPINGS_TEXTURE: Texture2D = preload("res://assets/cat_bar/ingredients/animal_droppings_generated.png")
 const BASE_SPIRIT_IDS: Array[StringName] = [
 	&"moon_gin", &"dusk_liqueur", &"sunset_whiskey", &"dawn_vodka", &"daybreak_white_rum",
 ]
@@ -18,6 +20,7 @@ const TOOL_IDS: Array[StringName] = [&"shaker", &"jigger", &"bar_spoon"]
 const SUPPORT_IDS: Array[StringName] = [&"clear_ice", &"catnip_spice", &"premium_fish_oil"]
 const SHAKER_LID_ID: StringName = &"shaker_lid"
 const GLASS_ID: StringName = &"coupe_glass"
+const ANIMAL_DROPPINGS_ID: StringName = &"animal_droppings"
 
 enum ShelfMenuLevel { CATEGORIES, CONTENTS }
 enum DragMode { NONE, ITEM, SHAKE, POUR_SHAKER, STIR }
@@ -33,12 +36,20 @@ var _vessel_adapter: MixingVesselAdapter
 var _vessel_view: ShakerVesselView
 var _serving_glass_view: ServingGlassViewType
 var _items: Dictionary[StringName, DiegeticDragItem] = {}
+var _scene_sources: Dictionary[StringName, Node2D] = {}
+var _scene_source_items: Dictionary[StringName, DiegeticDragItem] = {}
 var _context_panel: PanelContainer
 var _context_label: Label
 var _status_label: Label
 var _instruction_label: Label
 var _jigger_fill: ColorRect
 var _pour_stream: Line2D
+var _paw_cursor: TextureRect
+var _paw_open_texture: AtlasTexture
+var _paw_grab_texture: AtlasTexture
+var _pointer_test_override: bool = false
+var _animal_sequence_tween: Tween
+var _animal_sequence_source_id: StringName = &""
 var _active_item: DiegeticDragItem
 var _active_drag_id: StringName = &""
 var _active_target_id: StringName = &""
@@ -63,8 +74,21 @@ func _ready() -> void:
 		return
 	_content.build(content_catalog)
 	_build_presentation()
+	visibility_changed.connect(_on_visibility_changed)
+	set_process(true)
 	if auto_start_session:
 		start_session(&"standalone_session", 1, &"moonlit_meow", &"booth_a")
+
+
+func _process(_delta: float) -> void:
+	if _paw_cursor != null and _paw_cursor.visible and not _pointer_test_override:
+		_paw_cursor.position = get_viewport().get_mouse_position() - _paw_cursor.size * Vector2(0.5, 0.22)
+
+
+func _exit_tree() -> void:
+	_cancel_animal_sequence()
+	_restore_all_scene_sources()
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 
 func _input(event: InputEvent) -> void:
@@ -118,6 +142,7 @@ func request_exit_for_test(instant: bool = true) -> bool:
 
 
 func _cancel_current_session() -> void:
+	_cancel_animal_sequence()
 	if _drag_mode == DragMode.SHAKE:
 		_vessel_adapter.cancel_shake()
 	_clear_drag()
@@ -128,6 +153,7 @@ func _cancel_current_session() -> void:
 	_session.cancel()
 	_legacy_jigger_selected = false
 	_reset_item_positions()
+	_restore_all_scene_sources()
 	session_cancelled.emit()
 	_update_view()
 
@@ -177,6 +203,16 @@ func cancel_drag_for_test() -> void:
 	_clear_drag()
 
 
+func move_active_drag_for_test(local_position: Vector2) -> void:
+	if _active_item == null:
+		return
+	_active_item.position = local_position - _active_item.size * 0.5
+	_pointer_test_override = true
+	get_viewport().warp_mouse(local_position)
+	if _paw_cursor != null:
+		_paw_cursor.position = local_position - _paw_cursor.size * Vector2(0.5, 0.22)
+
+
 func get_context_text_for_test(content_id: StringName) -> String:
 	return _build_context_text(content_id)
 
@@ -203,6 +239,59 @@ func is_shaker_lid_aligned() -> bool:
 
 func get_diegetic_item_count() -> int:
 	return _items.size()
+
+
+func has_active_drag() -> bool:
+	return _active_item != null or not _animal_sequence_source_id.is_empty()
+
+
+func finish_active_drag_on_target_for_test() -> bool:
+	if _active_item == null or _active_target_id.is_empty():
+		return false
+	var target := _items.get(_active_target_id) as DiegeticDragItem
+	if target == null:
+		return false
+	_finish_drag(target.get_global_rect().get_center())
+	return _interaction_locked
+
+
+func is_animal_sequence_playing() -> bool:
+	return not _animal_sequence_source_id.is_empty()
+
+
+func configure_scene_grab_sources(sources: Dictionary[StringName, Node2D]) -> void:
+	_clear_scene_grab_sources()
+	for source_id: StringName in sources:
+		var source := sources[source_id]
+		if source == null or not is_instance_valid(source) or not source.visible:
+			continue
+		var texture := source.get("character_texture") as Texture2D
+		if texture == null:
+			continue
+		var item := DiegeticDragItem.new()
+		var item_size := Vector2(76.0, 76.0)
+		var canvas_origin := source.get_global_transform_with_canvas().origin
+		item.configure(source_id, _scene_source_display_name(source_id), texture, item_size, canvas_origin - item_size * Vector2(0.5, 0.82))
+		item.set_name_visible(false)
+		item.set_visual_visible(false)
+		_register_item(item)
+		_scene_sources[source_id] = source
+		_scene_source_items[source_id] = item
+
+
+func set_pointer_enabled(enabled: bool) -> void:
+	if _paw_cursor != null:
+		_paw_cursor.visible = enabled
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN if enabled else Input.MOUSE_MODE_VISIBLE)
+
+
+func get_scene_grab_source_count() -> int:
+	return _scene_sources.size()
+
+
+func is_scene_source_displaced(source_id: StringName) -> bool:
+	var source := _scene_sources.get(source_id) as Node2D
+	return source != null and not source.visible
 
 
 func is_fullscreen_panel_present() -> bool:
@@ -360,6 +449,7 @@ func _build_presentation() -> void:
 	_build_context_panel()
 	_build_diegetic_items()
 	_build_feedback()
+	_build_paw_cursor()
 	_pour_stream = Line2D.new()
 	_pour_stream.name = "PourStream"
 	_pour_stream.width = 5.0
@@ -370,11 +460,34 @@ func _build_presentation() -> void:
 	add_child(_pour_stream)
 
 
+func _build_paw_cursor() -> void:
+	var frame_width := CAT_PAWS_TEXTURE.get_width() / 2
+	_paw_open_texture = AtlasTexture.new()
+	_paw_open_texture.atlas = CAT_PAWS_TEXTURE
+	_paw_open_texture.region = Rect2(0.0, 0.0, frame_width, CAT_PAWS_TEXTURE.get_height())
+	_paw_grab_texture = AtlasTexture.new()
+	_paw_grab_texture.atlas = CAT_PAWS_TEXTURE
+	_paw_grab_texture.region = Rect2(frame_width, 0.0, frame_width, CAT_PAWS_TEXTURE.get_height())
+	_paw_cursor = TextureRect.new()
+	_paw_cursor.name = "CatPawCursor"
+	_paw_cursor.size = Vector2(126.0, 82.0)
+	_paw_cursor.pivot_offset = _paw_cursor.size * 0.5
+	_paw_cursor.rotation = PI
+	_paw_cursor.texture = _paw_open_texture
+	_paw_cursor.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_paw_cursor.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_paw_cursor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_paw_cursor.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_paw_cursor.z_index = 100
+	add_child(_paw_cursor)
+	set_pointer_enabled(visible)
+
+
 func _build_recipe_note() -> void:
 	var note := PanelContainer.new()
 	note.name = "RecipeNote"
-	note.position = Vector2(735.0, 30.0)
-	note.size = Vector2(205.0, 132.0)
+	note.position = Vector2(302.0, 4.0)
+	note.size = Vector2(356.0, 48.0)
 	note.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.12, 0.065, 0.07, 0.84)
@@ -384,7 +497,7 @@ func _build_recipe_note() -> void:
 	note.add_theme_stylebox_override("panel", style)
 	add_child(note)
 	var label := Label.new()
-	label.text = "月夜猫语\n月光金酒 30 ml\n暮色甜酒 30 ml\n冰块 ×2 · 猫薄荷 ×1\n量取 → 封盖 → Shake → 倒杯"
+	label.text = "月夜猫语｜月光金酒 30 · 暮色甜酒 30 · 冰×2 · 猫薄荷×1\n量取 → 封盖 → Shake → 倒杯"
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size", 13)
 	label.add_theme_color_override("font_color", Color("ffe0a3"))
@@ -417,49 +530,73 @@ func _build_context_panel() -> void:
 
 
 func _build_diegetic_items() -> void:
+	_add_station_surface(Rect2(215.0, 43.0, 139.0, 84.0), 0.56)
+	_add_station_surface(Rect2(548.0, 43.0, 98.0, 84.0), 0.56)
+	_add_station_surface(Rect2(168.0, 176.0, 151.0, 64.0), 0.44)
+	_add_station_surface(Rect2(592.0, 151.0, 305.0, 94.0), 0.44)
 	var bottle_positions: Array[Vector2] = [
-		Vector2(255.0, 155.0), Vector2(330.0, 150.0), Vector2(405.0, 154.0),
-		Vector2(480.0, 151.0), Vector2(555.0, 153.0),
+		Vector2(224.0, 52.0), Vector2(267.0, 52.0), Vector2(310.0, 52.0),
+		Vector2(556.0, 52.0), Vector2(599.0, 52.0),
 	]
 	for index: int in range(BASE_SPIRIT_IDS.size()):
-		_add_content_item(BASE_SPIRIT_IDS[index], Vector2(66.0, 122.0), bottle_positions[index])
-	_add_content_item(&"clear_ice", Vector2(68.0, 72.0), Vector2(630.0, 188.0))
-	_add_content_item(&"catnip_spice", Vector2(68.0, 72.0), Vector2(704.0, 186.0))
-	_add_content_item(&"premium_fish_oil", Vector2(68.0, 78.0), Vector2(778.0, 180.0))
-	var jigger := _add_content_item(&"jigger", Vector2(76.0, 102.0), Vector2(330.0, 345.0))
+		_add_content_item(BASE_SPIRIT_IDS[index], Vector2(36.0, 70.0), bottle_positions[index])
+	_add_content_item(&"clear_ice", Vector2(44.0, 48.0), Vector2(178.0, 184.0))
+	_add_content_item(&"catnip_spice", Vector2(44.0, 48.0), Vector2(225.0, 184.0))
+	_add_content_item(&"premium_fish_oil", Vector2(40.0, 54.0), Vector2(274.0, 178.0))
+	var jigger := _add_content_item(&"jigger", Vector2(44.0, 58.0), Vector2(604.0, 181.0))
 	_jigger_fill = ColorRect.new()
 	_jigger_fill.name = "Fill"
-	_jigger_fill.position = Vector2(22.0, 58.0)
-	_jigger_fill.size = Vector2(32.0, 0.0)
+	_jigger_fill.position = Vector2(10.0, 54.0)
+	_jigger_fill.size = Vector2(24.0, 0.0)
 	_jigger_fill.color = Color(0.92, 0.46, 0.24, 0.58)
 	_jigger_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	jigger.add_child(_jigger_fill)
 	var shaker := DiegeticDragItem.new()
-	shaker.configure(&"shaker", _display_name(&"shaker"), null, Vector2(112.0, 160.0), Vector2(454.0, 310.0))
+	shaker.configure(&"shaker", _display_name(&"shaker"), null, Vector2(62.0, 88.0), Vector2(706.0, 156.0))
+	shaker.set_name_visible(false)
 	_register_item(shaker)
 	_vessel_view = ShakerVesselView.new()
 	_vessel_view.name = "ShakerVesselView"
 	_vessel_view.position = shaker.size * 0.5 + Vector2(0.0, 2.0)
-	_vessel_view.vessel_size = Vector2(86.0, 132.0)
+	_vessel_view.vessel_size = Vector2(48.0, 72.0)
 	_vessel_view.body_texture = SHAKER_OPEN_TEXTURE
 	_vessel_view.lid_texture = SHAKER_LID_TEXTURE
 	shaker.add_child(_vessel_view)
 	_vessel_view.bind(_vessel_adapter)
-	_add_content_item(&"bar_spoon", Vector2(124.0, 72.0), Vector2(580.0, 378.0))
+	_add_content_item(&"bar_spoon", Vector2(82.0, 38.0), Vector2(734.0, 205.0))
 	var glass_definition := _content.get_glass(GLASS_ID)
 	var glass_item := DiegeticDragItem.new()
-	glass_item.configure(GLASS_ID, glass_definition.display_name, null, Vector2(96.0, 126.0), Vector2(752.0, 328.0), false)
+	glass_item.configure(GLASS_ID, glass_definition.display_name, null, Vector2(58.0, 78.0), Vector2(832.0, 164.0), false)
+	glass_item.set_name_visible(false)
 	_register_item(glass_item)
 	_serving_glass_view = ServingGlassViewType.new()
 	_serving_glass_view.name = "ServingGlassView"
 	_serving_glass_view.glass_texture = glass_definition.icon_texture
 	_serving_glass_view.capacity_ml = glass_definition.capacity_ml
-	_serving_glass_view.glass_size = Vector2(86.0, 116.0)
+	_serving_glass_view.glass_size = Vector2(50.0, 70.0)
 	_serving_glass_view.position = glass_item.size * 0.5
 	glass_item.add_child(_serving_glass_view)
 	var lid := DiegeticDragItem.new()
-	lid.configure(SHAKER_LID_ID, "Shake 杯盖", SHAKER_LID_TEXTURE, Vector2(82.0, 54.0), Vector2(650.0, 306.0))
+	lid.configure(SHAKER_LID_ID, "Shake 杯盖", SHAKER_LID_TEXTURE, Vector2(48.0, 32.0), Vector2(778.0, 178.0))
+	lid.set_name_visible(false)
 	_register_item(lid)
+
+
+func _add_station_surface(rect: Rect2, alpha: float) -> void:
+	var surface := Panel.new()
+	surface.position = rect.position
+	surface.size = rect.size
+	surface.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	surface.z_index = -5
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.22, 0.075, 0.025, alpha)
+	style.border_color = Color(0.64, 0.36, 0.15, minf(alpha + 0.12, 0.82))
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(3)
+	style.shadow_color = Color(0.015, 0.008, 0.006, 0.34)
+	style.shadow_size = 2
+	surface.add_theme_stylebox_override("panel", style)
+	add_child(surface)
 
 
 func _build_feedback() -> void:
@@ -486,7 +623,7 @@ func _build_feedback() -> void:
 	add_child(_status_label)
 	var exit_hint := Label.new()
 	exit_hint.position = Vector2(22.0, 505.0)
-	exit_hint.text = "Esc  返回大厅"
+	exit_hint.text = "Esc  清空本杯"
 	exit_hint.add_theme_color_override("font_color", Color("d9b77c"))
 	exit_hint.add_theme_color_override("font_outline_color", Color(0.04, 0.02, 0.025, 0.98))
 	exit_hint.add_theme_constant_override("outline_size", 4)
@@ -498,6 +635,7 @@ func _add_content_item(content_id: StringName, item_size: Vector2, item_position
 	var definition := _get_content_definition(content_id)
 	var item := DiegeticDragItem.new()
 	item.configure(content_id, definition.display_name, definition.icon_texture, item_size, item_position)
+	item.set_name_visible(false)
 	_register_item(item)
 	return item
 
@@ -523,6 +661,8 @@ func _on_item_hover_ended(_content_id: StringName) -> void:
 
 
 func _build_context_text(content_id: StringName) -> String:
+	if _scene_sources.has(content_id):
+		return "%s\n场景动物 · 松手投入 Shake 杯\n会留下一份神秘馈赠，然后回到原位" % _scene_source_display_name(content_id)
 	if content_id == SHAKER_LID_ID:
 		return "Shake 杯盖\n拖到 Shake 杯上完成封盖"
 	if content_id == &"shaker":
@@ -583,6 +723,12 @@ func _on_item_drag_requested(content_id: StringName, global_pointer: Vector2) ->
 	_active_target_id = _target_for(content_id)
 	_drag_offset = _viewport_to_local(global_pointer) - item.position
 	item.z_index = 30
+	if _paw_cursor != null:
+		_paw_cursor.texture = _paw_grab_texture
+	if _scene_sources.has(content_id):
+		var source := _scene_sources[content_id]
+		source.visible = false
+		item.set_visual_visible(true)
 	_context_panel.visible = false
 	_set_target_highlight(false)
 	if _drag_mode == DragMode.STIR:
@@ -618,6 +764,20 @@ func _finish_drag(global_pointer: Vector2) -> void:
 		var result := _complete_spoon_metrics(inside_target, duration)
 		if not result.success:
 			_bounce_home(item)
+			_clear_drag()
+			return
+		_clear_drag()
+		return
+	if _scene_sources.has(subject_id):
+		if inside_target:
+			var result := _perform_drop(subject_id, _active_target_id, true)
+			if result.success:
+				_clear_drag(false, false)
+				_play_animal_ingredient_sequence(subject_id, item, target)
+				return
+		else:
+			_set_feedback(InteractionResult.rejected("请把动物抱到发光的 Shake 杯上方再松手", &"invalid_drop"))
+		_restore_scene_source(subject_id)
 		_clear_drag()
 		return
 	if not inside_target:
@@ -631,6 +791,8 @@ func _finish_drag(global_pointer: Vector2) -> void:
 
 
 func _target_for(content_id: StringName) -> StringName:
+	if _scene_sources.has(content_id):
+		return &"shaker"
 	var ingredient := _content.get_ingredient(content_id)
 	if ingredient != null:
 		return &"jigger" if ingredient.category == IngredientDefinition.Category.LIQUID else &"shaker"
@@ -643,6 +805,8 @@ func _target_for(content_id: StringName) -> StringName:
 
 
 func _instruction_for_drag(content_id: StringName) -> String:
+	if _scene_sources.has(content_id):
+		return "把%s抱到 Shake 杯上方，松手收集神秘馈赠" % _scene_source_display_name(content_id)
 	match content_id:
 		&"jigger": return "把量酒器拖到 Shake 杯，倒入量好的基酒"
 		&"bar_spoon": return "把长柄勺拖入开放的 Shake 杯内来回搅拌"
@@ -658,17 +822,23 @@ func _set_target_highlight(strong: bool) -> void:
 		item.set_highlighted(item_id == _active_target_id, strong and item_id == _active_target_id)
 
 
-func _clear_drag(reset_item: bool = true) -> void:
+func _clear_drag(reset_item: bool = true, restore_scene_source: bool = true) -> void:
+	var clearing_id := _active_drag_id
 	if _active_item != null:
 		_active_item.z_index = 0
 		if reset_item:
 			_active_item.reset_to_home()
+	if restore_scene_source and _scene_sources.has(clearing_id):
+		_restore_scene_source(clearing_id)
 	if _input_router != null:
 		_input_router.end_pointer_capture()
 	_active_item = null
 	_active_drag_id = &""
 	_active_target_id = &""
 	_drag_mode = DragMode.NONE
+	_pointer_test_override = false
+	if _paw_cursor != null:
+		_paw_cursor.texture = _paw_open_texture
 	_set_target_highlight(false)
 	if _instruction_label != null:
 		_instruction_label.text = "拖拽吧台物件开始调酒"
@@ -711,7 +881,9 @@ func _finish_animated_drop(subject_id: StringName, target_id: StringName, source
 
 func _perform_drop(subject_id: StringName, target_id: StringName, show_feedback: bool = true) -> InteractionResult:
 	var result: InteractionResult
-	if _content.get_ingredient(subject_id) != null:
+	if _scene_sources.has(subject_id) and target_id == &"shaker":
+		result = _submit_ingredient(ANIMAL_DROPPINGS_ID, target_id)
+	elif _content.get_ingredient(subject_id) != null:
 		result = _submit_ingredient(subject_id, target_id)
 	elif subject_id == &"jigger" and target_id == &"shaker":
 		result = _submit_jigger_to_shaker()
@@ -873,8 +1045,8 @@ func _update_view() -> void:
 	var draft := _session.get_draft_snapshot()
 	if _jigger_fill != null:
 		var ratio := clampf(draft.total_amount(&"jigger") / 60.0, 0.0, 1.0)
-		_jigger_fill.position.y = 82.0 - 28.0 * ratio
-		_jigger_fill.size.y = 28.0 * ratio
+		_jigger_fill.position.y = 54.0 - 20.0 * ratio
+		_jigger_fill.size.y = 20.0 * ratio
 	var shaker := _items.get(&"shaker") as DiegeticDragItem
 	if shaker != null:
 		shaker.set_ready_hint(draft.is_sealed(&"shaker") and not _has_completed_shake())
@@ -958,6 +1130,177 @@ func _reset_item_positions() -> void:
 		item.set_ready_hint(false)
 	if _serving_glass_view != null:
 		_serving_glass_view.clear_contents()
+	_restore_all_scene_sources()
+
+
+func _play_animal_ingredient_sequence(
+	source_id: StringName,
+	animal_item: DiegeticDragItem,
+	target: DiegeticDragItem
+) -> void:
+	if animal_item == null or target == null:
+		_restore_scene_source(source_id)
+		return
+	_interaction_locked = true
+	_animal_sequence_source_id = source_id
+	animal_item.z_index = 46
+	animal_item.set_visual_visible(true)
+	var perch_position := target.position + Vector2(
+		target.size.x * 0.5 - animal_item.size.x * 0.5,
+		-animal_item.size.y * 0.72
+	)
+	var squat_position := perch_position + Vector2(0.0, 7.0)
+	_instruction_label.text = "%s正在贡献神秘原料……" % _scene_source_display_name(source_id)
+	_animal_sequence_tween = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	_animal_sequence_tween.tween_property(animal_item, "position", perch_position, 0.18)
+	_animal_sequence_tween.parallel().tween_property(animal_item, "rotation", 0.0, 0.18)
+	_animal_sequence_tween.tween_property(animal_item, "position", squat_position, 0.1)
+	_animal_sequence_tween.parallel().tween_property(animal_item, "scale", Vector2(1.08, 0.86), 0.1)
+	_animal_sequence_tween.tween_callback(_spawn_droppings_fall.bind(animal_item, target))
+	_animal_sequence_tween.tween_interval(0.42)
+	_animal_sequence_tween.tween_callback(_begin_litter_bury_feedback.bind(target))
+	for swipe_index: int in range(3):
+		_animal_sequence_tween.tween_property(animal_item, "position:x", perch_position.x - 9.0, 0.1)
+		_animal_sequence_tween.parallel().tween_property(animal_item, "rotation", -0.11, 0.1)
+		_animal_sequence_tween.tween_callback(_spawn_litter_dust.bind(target, -1.0))
+		_animal_sequence_tween.tween_property(animal_item, "position:x", perch_position.x + 9.0, 0.1)
+		_animal_sequence_tween.parallel().tween_property(animal_item, "rotation", 0.11, 0.1)
+		_animal_sequence_tween.tween_callback(_spawn_litter_dust.bind(target, 1.0))
+	_animal_sequence_tween.tween_property(animal_item, "position", animal_item.home_position, 0.3)
+	_animal_sequence_tween.parallel().tween_property(animal_item, "rotation", 0.0, 0.3)
+	_animal_sequence_tween.parallel().tween_property(animal_item, "scale", Vector2.ONE, 0.3)
+	_animal_sequence_tween.tween_callback(_finish_animal_ingredient_sequence.bind(source_id))
+
+
+func _spawn_droppings_fall(animal_item: DiegeticDragItem, target: DiegeticDragItem) -> void:
+	var icon := Sprite2D.new()
+	var cropped_droppings := AtlasTexture.new()
+	cropped_droppings.atlas = ANIMAL_DROPPINGS_TEXTURE
+	cropped_droppings.region = Rect2(300.0, 320.0, 440.0, 440.0)
+	icon.texture = cropped_droppings
+	icon.position = animal_item.position + Vector2(animal_item.size.x * 0.5, animal_item.size.y * 0.9)
+	icon.scale = Vector2(0.1, 0.1)
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.modulate = Color(1.25, 1.15, 0.95, 1.0)
+	icon.z_index = 60
+	add_child(icon)
+	var target_position := target.position + Vector2(target.size.x * 0.5, target.size.y * 0.42)
+	var tween := icon.create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(icon, "position", target_position, 0.38)
+	tween.parallel().tween_property(icon, "scale", Vector2(0.065, 0.065), 0.38)
+	tween.parallel().tween_property(icon, "rotation", 0.22, 0.38)
+	tween.tween_callback(_spawn_cup_impact.bind(target))
+	tween.tween_property(icon, "modulate:a", 0.0, 0.12)
+	tween.tween_callback(icon.queue_free)
+
+
+func _spawn_cup_impact(target: DiegeticDragItem) -> void:
+	for index: int in range(8):
+		var mote := ColorRect.new()
+		mote.color = Color("ffe1a1") if index % 2 == 0 else Color("d99b56")
+		mote.size = Vector2(5.0, 5.0)
+		mote.position = target.position + Vector2(target.size.x * 0.5, target.size.y * 0.3)
+		mote.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		mote.z_index = 61
+		add_child(mote)
+		var angle := -2.7 + float(index) * 0.32
+		var destination := mote.position + Vector2(cos(angle), sin(angle)) * (12.0 + float(index % 2) * 5.0)
+		var tween := mote.create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.tween_property(mote, "position", destination, 0.2)
+		tween.parallel().tween_property(mote, "modulate:a", 0.0, 0.2)
+		tween.tween_callback(mote.queue_free)
+
+
+func _begin_litter_bury_feedback(_target: DiegeticDragItem) -> void:
+	_instruction_label.text = "猫猫正在认真埋好不存在的猫砂……"
+
+
+func _spawn_litter_dust(target: DiegeticDragItem, direction: float) -> void:
+	for streak_index: int in range(2):
+		var streak := ColorRect.new()
+		streak.color = Color("ffe0a0")
+		streak.size = Vector2(18.0 - float(streak_index) * 4.0, 3.0)
+		streak.position = target.position + Vector2(
+			target.size.x * 0.5 - streak.size.x * 0.5,
+			target.size.y * 0.04 + float(streak_index) * 8.0
+		)
+		streak.rotation = direction * (0.2 + float(streak_index) * 0.12)
+		streak.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		streak.z_index = 62
+		add_child(streak)
+		var streak_tween := streak.create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		streak_tween.tween_property(streak, "position:x", streak.position.x + direction * 18.0, 0.24)
+		streak_tween.parallel().tween_property(streak, "modulate:a", 0.0, 0.24)
+		streak_tween.tween_callback(streak.queue_free)
+	for index: int in range(7):
+		var grain := ColorRect.new()
+		grain.color = Color("f0d092") if index % 2 == 0 else Color("aa7747")
+		grain.size = Vector2(7.0 + float(index % 3), 7.0 + float(index % 3))
+		grain.position = target.position + Vector2(target.size.x * 0.5, target.size.y * 0.16)
+		grain.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		grain.z_index = 61
+		add_child(grain)
+		var destination := grain.position + Vector2(direction * (14.0 + float(index) * 5.0), -10.0 - float(index % 3) * 8.0)
+		var tween := grain.create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.tween_property(grain, "position", destination, 0.28)
+		tween.parallel().tween_property(grain, "modulate:a", 0.0, 0.28)
+		tween.tween_callback(grain.queue_free)
+
+
+func _finish_animal_ingredient_sequence(source_id: StringName) -> void:
+	_restore_scene_source(source_id)
+	_animal_sequence_tween = null
+	_animal_sequence_source_id = &""
+	_interaction_locked = false
+	_instruction_label.text = "猫猫埋好猫砂，已经回到原位"
+
+
+func _cancel_animal_sequence() -> void:
+	if _animal_sequence_tween != null and _animal_sequence_tween.is_valid():
+		_animal_sequence_tween.kill()
+	if not _animal_sequence_source_id.is_empty():
+		_restore_scene_source(_animal_sequence_source_id)
+	_animal_sequence_tween = null
+	_animal_sequence_source_id = &""
+	_interaction_locked = false
+
+
+func _restore_scene_source(source_id: StringName) -> void:
+	var source := _scene_sources.get(source_id) as Node2D
+	if source != null and is_instance_valid(source):
+		source.visible = true
+	var item := _scene_source_items.get(source_id) as DiegeticDragItem
+	if item != null:
+		item.reset_to_home()
+		item.set_visual_visible(false)
+
+
+func _restore_all_scene_sources() -> void:
+	for source_id: StringName in _scene_sources:
+		_restore_scene_source(source_id)
+
+
+func _clear_scene_grab_sources() -> void:
+	_restore_all_scene_sources()
+	for source_id: StringName in _scene_source_items.keys():
+		var item := _scene_source_items[source_id]
+		_items.erase(source_id)
+		item.queue_free()
+	_scene_source_items.clear()
+	_scene_sources.clear()
+
+
+func _scene_source_display_name(source_id: StringName) -> String:
+	match source_id:
+		&"bartender_cat": return "调酒师猫猫"
+		&"worker_cat": return "打工猫猫"
+	return "酒吧动物"
+
+
+func _on_visibility_changed() -> void:
+	if not is_node_ready():
+		return
+	set_pointer_enabled(visible and mouse_filter != Control.MOUSE_FILTER_IGNORE)
 
 
 func _viewport_to_local(viewport_position: Vector2) -> Vector2:
