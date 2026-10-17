@@ -1,5 +1,7 @@
 # validate-desktop-idle-mvp
 
+> 窗口范围更新（2026-10-17）：用户明确要求真正的无边框半透明桌面版。`enable-transparent-desktop-window` 单独实现并验收原生透明、置顶和窗口操作；本文件的 A/B 档是原始 MVP 拆分记录，当前窗口行为以 `openspec/specs/desktop-window/spec.md` 为准。旧 MVP 的其他未完成验收继续保留。
+
 ## 为什么要做
 
 MaoMaoClub 需要验证第一个可玩承诺：一个只面向 Windows 的桌面小酒馆，能停留在玩家日常桌面旁边，不需要持续操作也能显得鲜活。

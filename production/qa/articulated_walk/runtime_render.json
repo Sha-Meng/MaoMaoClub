@@ -1,0 +1,32 @@
+{
+  "average_process_ms": 14.097,
+  "borderless": true,
+  "engine": "4.6.3-stable (official)",
+  "frames": 90,
+  "invariants": [],
+  "native_topmost": true,
+  "seen_actions": [
+    "idle",
+    "idle_work",
+    "walk",
+    "idle_sit",
+    "idle_stand",
+    "take_tray",
+    "drink",
+    "carry_tray",
+    "pay",
+    "stand_up",
+    "slow_nod",
+    "wipe_counter",
+    "quip",
+    "serve_drink",
+    "receive_drink",
+    "toast",
+    "listen",
+    "chat",
+    "wipe_glass"
+  ],
+  "transparent": true,
+  "transparent_corner": true,
+  "worst_process_ms": 17.316
+}

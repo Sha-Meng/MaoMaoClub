@@ -1,0 +1,67 @@
+{
+	"fps": 30,
+	"frames_per_variant": 132,
+	"success": true,
+	"variants": {
+		"bartender": {
+			"cycles_per_second": 0.921052631578947,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"customer_capybara": {
+			"cycles_per_second": 0.857142857142857,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"customer_dog": {
+			"cycles_per_second": 0.909090909090909,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"customer_fox": {
+			"cycles_per_second": 0.952380952380952,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"customer_rabbit": {
+			"cycles_per_second": 0.923076923076923,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"customer_raccoon": {
+			"cycles_per_second": 0.866666666666667,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"customer_squirrel": {
+			"cycles_per_second": 0.892857142857143,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"manager": {
+			"cycles_per_second": 0.857142857142857,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"server": {
+			"cycles_per_second": 0.928571428571429,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"server_carry": {
+			"cycles_per_second": 0.928571428571429,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		}
+	}
+}

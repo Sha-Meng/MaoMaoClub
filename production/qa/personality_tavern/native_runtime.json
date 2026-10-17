@@ -1,0 +1,128 @@
+{
+	"borderless": true,
+	"chats": 10,
+	"engine": "4.6.3-stable (official)",
+	"events": [
+		{
+			"always_on_top": true,
+			"at": 0.146064,
+			"focused": true,
+			"mode": 0,
+			"native_topmost": true,
+			"panel": false,
+			"position": [
+				1323,
+				1032
+			],
+			"size": [
+				1237,
+				360
+			]
+		},
+		{
+			"always_on_top": true,
+			"at": 37.2736210000005,
+			"focused": true,
+			"mode": 0,
+			"native_topmost": true,
+			"panel": true,
+			"position": [
+				1323,
+				1032
+			],
+			"size": [
+				1237,
+				360
+			]
+		},
+		{
+			"always_on_top": true,
+			"at": 71.0956509999986,
+			"focused": true,
+			"mode": 0,
+			"native_topmost": true,
+			"panel": false,
+			"position": [
+				1323,
+				1032
+			],
+			"size": [
+				1237,
+				360
+			]
+		},
+		{
+			"always_on_top": true,
+			"at": 252.520364666656,
+			"focused": true,
+			"mode": 0,
+			"native_topmost": true,
+			"panel": true,
+			"position": [
+				1323,
+				1032
+			],
+			"size": [
+				1237,
+				360
+			]
+		},
+		{
+			"always_on_top": true,
+			"at": 261.886940999993,
+			"focused": true,
+			"mode": 0,
+			"native_topmost": true,
+			"panel": false,
+			"position": [
+				1323,
+				1032
+			],
+			"size": [
+				1237,
+				360
+			]
+		},
+		{
+			"always_on_top": true,
+			"at": 264.486916333328,
+			"focused": true,
+			"mode": 0,
+			"native_topmost": true,
+			"panel": true,
+			"position": [
+				1323,
+				1032
+			],
+			"size": [
+				1237,
+				360
+			]
+		},
+		{
+			"always_on_top": true,
+			"at": 266.961889999996,
+			"focused": true,
+			"mode": 0,
+			"native_topmost": true,
+			"panel": false,
+			"position": [
+				1323,
+				1032
+			],
+			"size": [
+				1237,
+				360
+			]
+		}
+	],
+	"fps": 30.0,
+	"invariants": [],
+	"native_topmost": true,
+	"process_seconds": 0.007939,
+	"served": 17,
+	"static_memory_bytes": 122334867.0,
+	"topmost": true,
+	"transparent": true,
+	"transparent_corner": true
+}

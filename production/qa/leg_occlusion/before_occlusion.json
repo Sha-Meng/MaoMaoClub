@@ -1,0 +1,70 @@
+{
+	"errors": [
+		"近腿遮挡错误: customer_squirrel overlap=17050 wrong=17050",
+		"近腿遮挡错误: customer_dog overlap=76846 wrong=76846",
+		"近腿遮挡错误: customer_capybara overlap=32314 wrong=32314",
+		"近腿遮挡错误: customer_fox overlap=48718 wrong=48718",
+		"近腿遮挡错误: customer_rabbit overlap=18904 wrong=18904",
+		"近腿遮挡错误: customer_raccoon overlap=52158 wrong=52158",
+		"近腿遮挡错误: manager overlap=11116 wrong=11116",
+		"近腿遮挡错误: bartender overlap=44046 wrong=44046",
+		"近腿遮挡错误: server overlap=17576 wrong=17576",
+		"近腿遮挡错误: server_carry overlap=20324 wrong=20324"
+	],
+	"overlap_pixels": 339052,
+	"samples": 640,
+	"success": false,
+	"variants": {
+		"bartender": {
+			"overlap_pixels": 44046,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 44046
+		},
+		"customer_capybara": {
+			"overlap_pixels": 32314,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 32314
+		},
+		"customer_dog": {
+			"overlap_pixels": 76846,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 76846
+		},
+		"customer_fox": {
+			"overlap_pixels": 48718,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 48718
+		},
+		"customer_rabbit": {
+			"overlap_pixels": 18904,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 18904
+		},
+		"customer_raccoon": {
+			"overlap_pixels": 52158,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 52158
+		},
+		"customer_squirrel": {
+			"overlap_pixels": 17050,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 17050
+		},
+		"manager": {
+			"overlap_pixels": 11116,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 11116
+		},
+		"server": {
+			"overlap_pixels": 17576,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 17576
+		},
+		"server_carry": {
+			"overlap_pixels": 20324,
+			"overlap_samples": 30,
+			"wrong_order_pixels": 20324
+		}
+	},
+	"wrong_order_pixels": 339052
+}

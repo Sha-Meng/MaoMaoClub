@@ -1,0 +1,52 @@
+[
+  {
+    "file": "assets/tavern/walk_complete/bartender.png",
+    "sha256": "79B8F2708F64DEE206C898C27D6BDDEAD25AC40AA3F183F33BEB43E6D98AB288",
+    "bytes": 1544529
+  },
+  {
+    "file": "assets/tavern/walk_complete/customer_capybara.png",
+    "sha256": "421B3F4CE78F38E8E1BCF1BF0818825D4566470CEE75EC03DF9BFFB0B88C83B4",
+    "bytes": 1637053
+  },
+  {
+    "file": "assets/tavern/walk_complete/customer_dog.png",
+    "sha256": "00EDDF452559CD4F7ACF6E4136346E261BBB53D4486DC7C276C1EF86A59A6F98",
+    "bytes": 1454582
+  },
+  {
+    "file": "assets/tavern/walk_complete/customer_fox.png",
+    "sha256": "228F715B2B5A5CE20FC54CC2400F542326BFFE8DE6AA9F2F400A95D6BE840C92",
+    "bytes": 1559875
+  },
+  {
+    "file": "assets/tavern/walk_complete/customer_rabbit.png",
+    "sha256": "277F2E3950183350B91F4EB40C890C71466374453E2F3B7FFFD08DDF4B24C911",
+    "bytes": 1312440
+  },
+  {
+    "file": "assets/tavern/walk_complete/customer_raccoon.png",
+    "sha256": "48EBD23DAC0E60887C287338A55A140D6452E29F82D9346DD1369CEE910BA225",
+    "bytes": 1713405
+  },
+  {
+    "file": "assets/tavern/walk_complete/customer_squirrel.png",
+    "sha256": "736A7A01AC75849E33B7A4E734AC4AAE3A91EB46BA1FCD39200438513079AB61",
+    "bytes": 1721191
+  },
+  {
+    "file": "assets/tavern/walk_complete/manager.png",
+    "sha256": "FA48CB07426CB2930618BD52F734F0DDCB49166B2236297602A8D6EC7565488B",
+    "bytes": 1750195
+  },
+  {
+    "file": "assets/tavern/walk_complete/server_carry.png",
+    "sha256": "FA378FFAD51133B03BFE9B2C2F1171BDFF7302B7C4BCB7A71E9D35B82B3260EB",
+    "bytes": 1687012
+  },
+  {
+    "file": "assets/tavern/walk_complete/server.png",
+    "sha256": "E1EDFA89E80250410DD2ABDCD2F28590A696B1559DAB6447A904A437F3A11B2A",
+    "bytes": 1720638
+  }
+]

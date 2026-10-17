@@ -1,0 +1,22 @@
+{
+  "assets\\tavern\\grounded\\bartender.png": "f62c4bf6deaba518ab4e7e9bdba906904e670d25d1275632e515b5c78349a3e6",
+  "assets\\tavern\\grounded\\customer_capybara.png": "f4263a0c5ed16793a08cd2ec17e9634805ed9367f38f9cac0166138d5b148260",
+  "assets\\tavern\\grounded\\customer_dog.png": "3ab570772b83f673b695be00ba921d2778a710fbf65b6ca6bd1360557367e5e7",
+  "assets\\tavern\\grounded\\customer_fox.png": "bbf4cb3c45ea046ee769889b72a9873dfd3298b7d7d0cde6e873fbb768943977",
+  "assets\\tavern\\grounded\\customer_rabbit.png": "6d426a2bc275d6849e03dc56befed620d6e04e04c9acaef6c9d1695a1ddcf8bd",
+  "assets\\tavern\\grounded\\customer_raccoon.png": "61a5191e0165a409267d7feed685e1add9b816c0ee4b46a2c8af66ed671e9131",
+  "assets\\tavern\\grounded\\customer_squirrel.png": "e3099aa34ed4bad98cf985a4c6b4c83b8cbdb4eb3476d82031237912c649e2e8",
+  "assets\\tavern\\grounded\\manager.png": "955e997219c356b45d9090848b5e259b36cc4d7b7597de618cc225459fde94b7",
+  "assets\\tavern\\grounded\\server.png": "c7b5e0b7fff79b07bd7050e74ab0291b1a0298be5f94bd5b81a644105d2bcf80",
+  "assets\\tavern\\grounded\\server_carry.png": "f4cf4480b4e3f42093bac59135891bff1016ec29f5b0d4236a010496de459b47",
+  "assets\\tavern\\walk_complete\\bartender.png": "79b8f2708f64dee206c898c27d6bddead25ac40aa3f183f33beb43e6d98ab288",
+  "assets\\tavern\\walk_complete\\customer_capybara.png": "421b3f4ce78f38e8e1bcf1bf0818825d4566470cee75ec03df9bffb0b88c83b4",
+  "assets\\tavern\\walk_complete\\customer_dog.png": "00eddf452559cd4f7acf6e4136346e261bbb53d4486dc7c276c1ef86a59a6f98",
+  "assets\\tavern\\walk_complete\\customer_fox.png": "228f715b2b5a5ce20fc54cc2400f542326bffe8de6aa9f2f400a95d6be840c92",
+  "assets\\tavern\\walk_complete\\customer_rabbit.png": "277f2e3950183350b91f4eb40c890c71466374453e2f3b7fffd08ddf4b24c911",
+  "assets\\tavern\\walk_complete\\customer_raccoon.png": "48ebd23dac0e60887c287338a55a140d6452e29f82d9346dd1369cee910ba225",
+  "assets\\tavern\\walk_complete\\customer_squirrel.png": "736a7a01ac75849e33b7a4e734ac4aae3a91eb46ba1fcd39200438513079ab61",
+  "assets\\tavern\\walk_complete\\manager.png": "fa48cb07426cb2930618bd52f734f0ddcb49166b2236297602a8d6ec7565488b",
+  "assets\\tavern\\walk_complete\\server.png": "e1edfa89e80250410dd2abdcd2f28590a696b1559dab6447a904a437f3a11b2a",
+  "assets\\tavern\\walk_complete\\server_carry.png": "fa378ffad51133b03bfe9b2c2f1171bdff7302b7c4bcb7a71e9d35b82b3260eb"
+}

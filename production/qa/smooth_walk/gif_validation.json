@@ -1,0 +1,42 @@
+{
+  "bartender.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  },
+  "customer_capybara.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  },
+  "customer_dog.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  },
+  "customer_fox.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  },
+  "customer_rabbit.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  },
+  "customer_raccoon.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  },
+  "customer_squirrel.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  },
+  "manager.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  },
+  "server.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  },
+  "server_carry.gif": {
+    "frames": 132,
+    "duration_ms": 4400
+  }
+}

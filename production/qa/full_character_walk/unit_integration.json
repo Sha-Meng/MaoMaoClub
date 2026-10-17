@@ -1,0 +1,190 @@
+{
+	"assertions": 2290,
+	"cases": 45,
+	"engine": "4.6.3-stable (official)",
+	"engine_hash": "7d41c59c457bd5a245092b4e7eb2d833e3b3f8c3",
+	"failures": [],
+	"results": [
+		{
+			"name": "_test_catalog",
+			"success": true
+		},
+		{
+			"name": "_test_layout",
+			"success": true
+		},
+		{
+			"name": "_test_cycle",
+			"success": true
+		},
+		{
+			"name": "_test_reward_once",
+			"success": true
+		},
+		{
+			"name": "_test_drag_worker",
+			"success": true
+		},
+		{
+			"name": "_test_drag_customer",
+			"success": true
+		},
+		{
+			"name": "_test_move_occupied_chair",
+			"success": true
+		},
+		{
+			"name": "_test_move_shop",
+			"success": true
+		},
+		{
+			"name": "_test_remove_chair",
+			"success": true
+		},
+		{
+			"name": "_test_social",
+			"success": true
+		},
+		{
+			"name": "_test_checkpoint",
+			"success": true
+		},
+		{
+			"name": "_test_legacy_save",
+			"success": true
+		},
+		{
+			"name": "_test_soak",
+			"success": true
+		},
+		{
+			"name": "_test_malformed_data",
+			"success": true
+		},
+		{
+			"name": "_test_dirty_chair_checkpoint",
+			"success": true
+		},
+		{
+			"name": "_test_drag_checkpoint",
+			"success": true
+		},
+		{
+			"name": "_test_no_seats",
+			"success": true
+		},
+		{
+			"name": "_test_reset_and_delete",
+			"success": true
+		},
+		{
+			"name": "_test_table_mount",
+			"success": true
+		},
+		{
+			"name": "_test_personalities",
+			"success": true
+		},
+		{
+			"name": "_test_natural_social_end",
+			"success": true
+		},
+		{
+			"name": "_test_invalid_time",
+			"success": true
+		},
+		{
+			"name": "_test_random_edits",
+			"success": true
+		},
+		{
+			"name": "_test_files_and_backup",
+			"success": true
+		},
+		{
+			"name": "_test_session_guard",
+			"success": true
+		},
+		{
+			"name": "_test_staff_social_preemption",
+			"success": true
+		},
+		{
+			"name": "_test_idle_work",
+			"success": true
+		},
+		{
+			"name": "_test_determinism",
+			"success": true
+		},
+		{
+			"name": "_test_stride",
+			"success": true
+		},
+		{
+			"name": "_test_walk_sequence",
+			"success": true
+		},
+		{
+			"name": "_test_walk_sheets",
+			"success": true
+		},
+		{
+			"name": "_test_horizontal_drag",
+			"success": true
+		},
+		{
+			"name": "_test_bartender_lock",
+			"success": true
+		},
+		{
+			"name": "_test_empty_chair",
+			"success": true
+		},
+		{
+			"name": "_test_reserved_chair",
+			"success": true
+		},
+		{
+			"name": "_test_old_layout",
+			"success": true
+		},
+		{
+			"name": "_test_whole_body_contact",
+			"success": true
+		},
+		{
+			"name": "_test_held_frame_mirroring",
+			"success": true
+		},
+		{
+			"name": "_test_seating_anchor",
+			"success": true
+		},
+		{
+			"name": "_test_held_cup",
+			"success": true
+		},
+		{
+			"name": "_test_walk_registration",
+			"success": true
+		},
+		{
+			"name": "_test_drinking_frames",
+			"success": true
+		},
+		{
+			"name": "_test_drinking_sequence",
+			"success": true
+		},
+		{
+			"name": "场景、资源、HUD、存档集成",
+			"success": true
+		},
+		{
+			"name": "正式启动入口及退出保存",
+			"success": true
+		}
+	],
+	"success": true
+}

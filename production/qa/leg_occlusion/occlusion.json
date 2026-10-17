@@ -1,0 +1,59 @@
+{
+	"errors": [],
+	"overlap_pixels": 2215601,
+	"samples": 640,
+	"success": true,
+	"variants": {
+		"bartender": {
+			"overlap_pixels": 297326,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		},
+		"customer_capybara": {
+			"overlap_pixels": 372574,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		},
+		"customer_dog": {
+			"overlap_pixels": 306375,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		},
+		"customer_fox": {
+			"overlap_pixels": 224510,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		},
+		"customer_rabbit": {
+			"overlap_pixels": 126800,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		},
+		"customer_raccoon": {
+			"overlap_pixels": 211199,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		},
+		"customer_squirrel": {
+			"overlap_pixels": 86518,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		},
+		"manager": {
+			"overlap_pixels": 247155,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		},
+		"server": {
+			"overlap_pixels": 192178,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		},
+		"server_carry": {
+			"overlap_pixels": 150966,
+			"overlap_samples": 64,
+			"wrong_order_pixels": 0
+		}
+	},
+	"wrong_order_pixels": 0
+}

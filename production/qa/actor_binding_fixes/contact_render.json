@@ -1,0 +1,16 @@
+{
+	"engine": "4.6.3-stable (official)",
+	"errors": [],
+	"foot_spread_pixels": [
+		0,
+		0,
+		0,
+		0,
+		0,
+		0
+	],
+	"largest_extra_alpha_component": 50.0,
+	"seating_samples": 36,
+	"shoulder_samples": 160,
+	"success": true
+}

@@ -1,5 +1,7 @@
 # desktop-idle-experience 规格变更
 
+> 窗口范围更新（2026-10-17）：原生透明、默认置顶与窗口操作现由 `desktop-window` 能力规定，优先于本变更中旧 A/B 档的可选透明描述。本变更仍用于跟踪其余挂机体验的验收，未整体归档。
+
 ## ADDED Requirements
 
 ### Requirement: Windows 桌面 MVP 目标

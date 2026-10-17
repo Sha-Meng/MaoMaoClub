@@ -1,0 +1,31 @@
+{
+  "blender": "4.5.9 LTS",
+  "samples": 216,
+  "leg_root_blend": "attachment_fade",
+  "fixed_far_leg_layer": true,
+  "crossing_cycles": {
+    "walk": {
+      "crossings": 2,
+      "min_far_minus_near": -7.000009298324585,
+      "max_far_minus_near": 15.000009059906006
+    },
+    "walk_cup": {
+      "crossings": 2,
+      "min_far_minus_near": -7.000009298324585,
+      "max_far_minus_near": 15.000009059906006
+    }
+  },
+  "max_folded_visible_body_faces": 0,
+  "worst_fold": null,
+  "signed_foot_spacing_range": [
+    -7.000009298324585,
+    15.000009059906006
+  ],
+  "max_pelvis_rotation": 0.0,
+  "max_target_error": 8.16102116314982e-06,
+  "max_support_drift": 2.1616617837949548e-06,
+  "max_cup_attachment_error": 7.62939453125e-06,
+  "max_bone_length_error": 9.5367431640625e-06,
+  "failures": [],
+  "success": true
+}

@@ -25,6 +25,9 @@ dist/
 .vscode/
 .idea/
 
+# Local Codex workspace state
+.codex/
+
 # Secrets
 .env
 .env.*

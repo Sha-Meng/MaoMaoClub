@@ -1,0 +1,13 @@
+{
+	"duration_seconds": 11.0,
+	"engine": "4.6.3-stable (official)",
+	"frames": 330,
+	"mean_capture_render_ms": 1.7536,
+	"note": "帧耗时包含等待渲染信号，非隔离 GPU 基准；纹理内存包含字体和预览界面。",
+	"resolution": [
+		1120,
+		720
+	],
+	"texture_memory_bytes": 48520037,
+	"worst_capture_render_ms": 16.283
+}

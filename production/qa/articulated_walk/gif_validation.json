@@ -1,0 +1,52 @@
+{
+  "bartender": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  },
+  "customer_capybara": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  },
+  "customer_dog": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  },
+  "customer_fox": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  },
+  "customer_rabbit": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  },
+  "customer_raccoon": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  },
+  "customer_squirrel": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  },
+  "manager": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  },
+  "server": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  },
+  "server_carry": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "source_frames": 132
+  }
+}

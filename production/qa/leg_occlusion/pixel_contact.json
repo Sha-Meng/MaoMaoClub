@@ -1,0 +1,47 @@
+{
+	"errors": [],
+	"samples": 640,
+	"success": true,
+	"variants": {
+		"bartender": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_capybara": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_dog": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_fox": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_rabbit": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_raccoon": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_squirrel": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"manager": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0569924610106511
+		},
+		"server": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"server_carry": {
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		}
+	}
+}

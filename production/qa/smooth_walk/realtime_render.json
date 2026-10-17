@@ -1,0 +1,67 @@
+{
+	"fps": 30,
+	"frames_per_variant": 132,
+	"success": true,
+	"variants": {
+		"bartender": {
+			"cycles_per_second": 0.588235294117647,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0000076293945
+		},
+		"customer_capybara": {
+			"cycles_per_second": 0.639204545454545,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"customer_dog": {
+			"cycles_per_second": 0.576923076923077,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0000076293945
+		},
+		"customer_fox": {
+			"cycles_per_second": 0.707070707070707,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"customer_rabbit": {
+			"cycles_per_second": 0.597826086956522,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 79.9999923706055
+		},
+		"customer_raccoon": {
+			"cycles_per_second": 0.703125,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"customer_squirrel": {
+			"cycles_per_second": 1.02564102564103,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"manager": {
+			"cycles_per_second": 0.763494318181818,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 80.0
+		},
+		"server": {
+			"cycles_per_second": 1.13636363636364,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 79.9999923706055
+		},
+		"server_carry": {
+			"cycles_per_second": 1.13636363636364,
+			"light_and_dark": true,
+			"native_and_2x": true,
+			"returned_x": 79.9999923706055
+		}
+	}
+}

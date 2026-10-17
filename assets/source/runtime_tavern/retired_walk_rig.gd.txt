@@ -1,0 +1,412 @@
+extends RefCounted
+class_name TavernWalkRig
+
+const SHEETS: Array[Texture2D] = [preload("res://assets/tavern/walk_parts_first.png"), preload("res://assets/tavern/walk_parts_extra.png"), preload("res://assets/tavern/walk_parts_team.png")]
+const COLUMNS: Array[float] = [0.0, 0.29, 0.46, 0.64, 0.82, 1.0]
+const HELD_ARM: Texture2D = preload("res://assets/tavern/manager_held_arm.png")
+# Measured shoulder sockets in the 1536x1024 source atlases (far / near).
+const SHOULDER_SOCKETS: Dictionary = {
+	"customer_squirrel": [Vector2(274.0, 198.0), Vector2(348.0, 198.0)],
+	"customer_dog": [Vector2(206.0, 530.0), Vector2(348.0, 531.0)],
+	"customer_capybara": [Vector2(153.0, 845.0), Vector2(365.0, 866.0)],
+	"customer_fox": [Vector2(270.0, 225.0), Vector2(370.0, 229.0)],
+	"customer_rabbit": [Vector2(243.0, 552.0), Vector2(341.0, 562.0)],
+	"customer_raccoon": [Vector2(242.0, 875.0), Vector2(367.0, 874.0)],
+	"manager": [Vector2(162.0, 206.0), Vector2(336.0, 205.0)],
+	"bartender": [Vector2(195.0, 559.0), Vector2(332.0, 555.0)],
+	"server": [Vector2(201.0, 884.0), Vector2(331.0, 880.0)]}
+const JOINTS: Dictionary = {
+	"customer_squirrel": {"hip": 0.27, "arm": 0.31},
+	"customer_dog": {"hip": 0.34, "arm": 0.32},
+	"customer_capybara": {"hip": 0.25, "arm": 0.32},
+	"customer_fox": {"hip": 0.36, "arm": 0.29},
+	"customer_rabbit": {"hip": 0.31, "arm": 0.29},
+	"customer_raccoon": {"hip": 0.27, "arm": 0.29},
+	"manager": {"hip": 0.23, "arm": 0.31},
+	"bartender": {"hip": 0.31, "arm": 0.32},
+	"server": {"hip": 0.31, "arm": 0.30}}
+
+var parts: Dictionary = {}
+var _meshes: Dictionary = {}
+
+
+func _init() -> void:
+	var bitmaps: Array[BitMap] = []
+	var images: Array[Image] = []
+	for sheet: Texture2D in SHEETS:
+		var image: Image = sheet.get_image()
+		images.append(image)
+		var bitmap: BitMap = BitMap.new()
+		bitmap.create_from_image_alpha(image, 0.15)
+		bitmaps.append(bitmap)
+	for id: String in CastCatalog.all_ids():
+		var profile: Dictionary = CastCatalog.profile(id)
+		var sheet_index: int = int(profile["sheet"])
+		var row: int = int(profile["row"])
+		var image: Image = images[sheet_index]
+		var image_size: Vector2i = image.get_size()
+		var character_parts: Array[Dictionary] = []
+		for column: int in range(5):
+			var x0: int = roundi(COLUMNS[column] * image_size.x)
+			var x1: int = roundi(COLUMNS[column + 1] * image_size.x)
+			var y0: int = roundi(float(row) / 3.0 * image_size.y)
+			var y1: int = roundi(float(row + 1) / 3.0 * image_size.y)
+			var cell: Rect2i = Rect2i(x0, y0, x1 - x0, y1 - y0)
+			character_parts.append(_make_part(id, column, cell, bitmaps[sheet_index], image))
+		parts[id] = character_parts
+	var held_image: Image = HELD_ARM.get_image()
+	var held_bitmap: BitMap = BitMap.new()
+	held_bitmap.create_from_image_alpha(held_image, 0.15)
+	var held: Dictionary = _make_part("manager", 2, Rect2i(Vector2i.ZERO, held_image.get_size()), held_bitmap, held_image)
+	held["texture"] = HELD_ARM
+	# Calibrated palm center and glass bottom in the 1280-square held-arm source.
+	held["hand"] = (Vector2(955.0, 650.0) * HELD_ARM.get_size() / 1280.0 - (held["origin"] as Vector2)) * float(held["factor"])
+	held["cup"] = (Vector2(1006.0, 620.0) * HELD_ARM.get_size() / 1280.0 - (held["origin"] as Vector2)) * float(held["factor"])
+	parts["manager"][2] = held
+
+
+func _make_part(id: String, column: int, cell: Rect2i, bitmap: BitMap, image: Image) -> Dictionary:
+	var contour: PackedVector2Array = PackedVector2Array()
+	var largest_area: float = 0.0
+	for candidate: PackedVector2Array in bitmap.opaque_to_polygons(cell, 1.0):
+		var area: float = 0.0
+		for index: int in range(candidate.size()):
+			area += candidate[index].cross(candidate[(index + 1) % candidate.size()])
+		if absf(area) > largest_area:
+			largest_area = absf(area)
+			contour = candidate
+	var bounds: Rect2 = Rect2()
+	for index: int in range(contour.size()):
+		contour[index] += Vector2(cell.position)
+		bounds = Rect2(contour[index], Vector2.ZERO) if index == 0 else bounds.expand(contour[index])
+	var h: float = float(CastCatalog.profile(id)["height"])
+	var length: float = h * (1.0 - float(JOINTS[id]["hip"])) if column == 0 else h * float(JOINTS[id]["arm"] if column < 3 else JOINTS[id]["hip"])
+	if column >= 3:
+		length += h * 0.04
+	var anchor_x: float = _anchor_x(image, bounds, column == 0)
+	var anchor_y: float = bounds.position.y
+	if column == 0:
+		# A low tail is not the waist: register the torso along its own center line.
+		for y: int in range(int(bounds.position.y), mini(image.get_height(), ceili(bounds.end.y) + 1)):
+			if image.get_pixel(clampi(roundi(anchor_x), 0, image.get_width() - 1), y).a > 0.4:
+				anchor_y = float(y)
+	var factor: float = length / maxf(anchor_y - bounds.position.y if column == 0 else bounds.size.y, 1.0)
+	var origin: Vector2 = Vector2(anchor_x, anchor_y)
+	if column in [1, 2]:
+		# The cap extends above the joint. Rotating at the crop's top detaches that cap.
+		origin.y += bounds.size.y * 0.12
+	elif column >= 3:
+		origin.y += bounds.size.y * 0.10
+	var points: PackedVector2Array = PackedVector2Array()
+	var uvs: PackedVector2Array = PackedVector2Array()
+	for point: Vector2 in contour:
+		points.append((point - origin) * factor)
+		uvs.append(point / Vector2(image.get_size()))
+	var result: Dictionary = {"points": points, "uvs": uvs, "length": length, "origin": origin, "factor": factor, "bounds": bounds}
+	if column in [1, 2]:
+		var hand_x: float = 0.0
+		var count: int = 0
+		for point: Vector2 in contour:
+			if point.y > bounds.end.y - bounds.size.y * 0.12:
+				hand_x += point.x
+				count += 1
+		result["hand"] = (Vector2(hand_x / maxf(1.0, count), bounds.end.y - bounds.size.y * 0.07) - origin) * factor
+	if column >= 3:
+		var knee_source: Vector2 = Vector2(_span_center(image, bounds, 0.52), bounds.position.y + bounds.size.y * 0.52)
+		var ankle_source: Vector2 = Vector2(_span_center(image, bounds, 0.84), bounds.position.y + bounds.size.y * 0.84)
+		result["knee"] = (knee_source - origin) * factor
+		result["ankle"] = (ankle_source - origin) * factor
+		result["foot_bottom"] = (bounds.end.y - origin.y) * factor
+		result["upper_length"] = (result["knee"] as Vector2).length()
+		result["lower_length"] = (result["ankle"] as Vector2).distance_to(result["knee"] as Vector2)
+		var grid: PackedVector2Array = PackedVector2Array()
+		var grid_uvs: PackedVector2Array = PackedVector2Array()
+		var grid_weights: PackedVector3Array = PackedVector3Array()
+		var indices: PackedInt32Array = PackedInt32Array()
+		var logical: Rect2 = Rect2((bounds.position - origin) * factor, bounds.size * factor)
+		var columns: int = maxi(2, ceili(logical.size.x / 2.0))
+		var rows: int = maxi(4, ceili(logical.size.y / 2.0))
+		for row: int in range(rows + 1):
+			for col: int in range(columns + 1):
+				var point: Vector2 = logical.position + logical.size * Vector2(float(col) / columns, float(row) / rows)
+				grid.append(point)
+				grid_uvs.append((point / factor + origin) / Vector2(image.get_size()))
+				grid_weights.append(_leg_weights(point, result))
+		for row: int in range(rows):
+			for col: int in range(columns):
+				var first: int = row * (columns + 1) + col
+				indices.append_array(PackedInt32Array([first, first + 1, first + columns + 1, first + 1, first + columns + 2, first + columns + 1]))
+		result["grid"] = grid
+		result["grid_uvs"] = grid_uvs
+		result["grid_weights"] = grid_weights
+		result["indices"] = indices
+	return result
+
+
+func _anchor_x(image: Image, bounds: Rect2, bottom: bool) -> float:
+	# At the waist, the last substantial span belongs to the torso, not the tail.
+	var y: int = clampi(roundi(bounds.position.y + bounds.size.y * (0.92 if bottom else 0.12)), 0, image.get_height() - 1)
+	var start: int = -1
+	var center: float = bounds.get_center().x
+	var best_width: int = 0
+	for x: int in range(maxi(0, int(bounds.position.x)), mini(image.get_width(), ceili(bounds.end.x) + 1)):
+		if image.get_pixel(x, y).a > 0.4:
+			if start < 0:
+				start = x
+		elif start >= 0:
+			if x - start >= (8 if bottom else best_width):
+				center = (start + x) * 0.5
+				best_width = x - start
+			start = -1
+	return center
+
+
+func _span_center(image: Image, bounds: Rect2, fraction: float) -> float:
+	var y: int = clampi(roundi(bounds.position.y + bounds.size.y * fraction), 0, image.get_height() - 1)
+	var left: float = INF
+	var right: float = -INF
+	for x: int in range(maxi(0, int(bounds.position.x)), mini(image.get_width(), ceili(bounds.end.x) + 1)):
+		if image.get_pixel(x, y).a > 0.4:
+			left = minf(left, x)
+			right = maxf(right, x)
+	return (left + right) * 0.5 if is_finite(left) else bounds.get_center().x
+
+
+func foot_position(person: TavernPerson, side: int) -> Vector2:
+	var h: float = float(CastCatalog.profile(person.profile_id)["height"])
+	var part: Dictionary = parts[person.profile_id][3 + side]
+	var source_ankle: Vector2 = part["ankle"] as Vector2
+	var sole: float = float(part["foot_bottom"]) - source_ankle.y
+	var hip_x: float = (-1.0 if side == 0 else 1.0) * h * 0.065
+	if not person.walking:
+		return Vector2(hip_x + source_ankle.x, -sole)
+	var phase: float = fposmod(person.walk_phase + side * 0.5, 1.0)
+	var travel: float = person.stride_length() * 0.25
+	var x: float = lerpf(travel, -travel, phase * 2.0) if phase < 0.5 else lerpf(-travel, travel, smoothstep(0.0, 1.0, (phase - 0.5) * 2.0))
+	var lift: float = sin((phase - 0.5) * TAU) * h * (0.035 if person.profile_id in ["manager", "customer_capybara"] else 0.05) if phase >= 0.5 else 0.0
+	return Vector2(hip_x + source_ankle.x + x, -sole - lift)
+
+
+func arm_angle(person: TavernPerson, side: int) -> float:
+	if person.profile_id == "manager" and side == 1:
+		return -0.25 if person.action in ["greet", "toast", "react_click"] else 0.0
+	if person.carrying and side == 1:
+		return -1.0
+	if not person.walking:
+		return sin(person.action_time * 3.0) * 0.18 if person.profile_id == "manager" and person.action in ["chat", "story", "laugh"] else 0.0
+	var phase: float = fposmod(person.walk_phase + side * 0.5, 1.0)
+	var amplitude: float = 0.30 if person.profile_id in ["manager", "customer_capybara"] else 0.52
+	return cos(phase * TAU) * amplitude
+
+
+func shoulder_position(person: TavernPerson, side: int) -> Vector2:
+	var body: Dictionary = parts[person.profile_id][0]
+	var sheet: Texture2D = SHEETS[int(CastCatalog.profile(person.profile_id)["sheet"])]
+	var source: Vector2 = (SHOULDER_SOCKETS[person.profile_id][side] as Vector2) * sheet.get_size() / Vector2(1536.0, 1024.0)
+	return (source - (body["origin"] as Vector2)) * float(body["factor"]) + torso_offset(person)
+
+
+func hand_position(person: TavernPerson, side: int) -> Vector2:
+	return shoulder_position(person, side) + (parts[person.profile_id][1 + side]["hand"] as Vector2).rotated(arm_angle(person, side))
+
+
+func torso_offset(person: TavernPerson) -> Vector2:
+	var h: float = float(CastCatalog.profile(person.profile_id)["height"])
+	return Vector2(0.0, -h * float(JOINTS[person.profile_id]["hip"]) + pelvis_bob(person))
+
+
+func pelvis_bob(person: TavernPerson) -> float:
+	if not person.walking:
+		return 0.0
+	var h: float = float(CastCatalog.profile(person.profile_id)["height"])
+	var drop: float = h * 0.012
+	# Lower the pelvis only as far as the two fixed-length legs need this frame.
+	# A constant large drop makes short-legged characters squat through the whole gait.
+	for side: int in range(2):
+		var part: Dictionary = parts[person.profile_id][3 + side]
+		var target: Vector2 = foot_position(person, side)
+		var hip_x: float = (-1.0 if side == 0 else 1.0) * h * 0.065
+		var reach: float = float(part["upper_length"]) + float(part["lower_length"]) - 0.02
+		var horizontal: float = target.x - hip_x
+		var vertical: float = sqrt(maxf(0.0, reach * reach - horizontal * horizontal))
+		drop = maxf(drop, target.y + float(part["foot_bottom"]) - vertical)
+	return drop
+
+
+func arm_polygon(person: TavernPerson, side: int) -> PackedVector2Array:
+	var result: PackedVector2Array = PackedVector2Array()
+	var angle: float = arm_angle(person, side)
+	var shoulder: Vector2 = shoulder_position(person, side)
+	for point: Vector2 in parts[person.profile_id][side + 1]["points"]:
+		result.append(point.rotated(angle) + shoulder)
+	return result
+
+
+func torso_polygons(person: TavernPerson) -> Array[PackedVector2Array]:
+	var result: PackedVector2Array = PackedVector2Array()
+	var offset: Vector2 = torso_offset(person)
+	for point: Vector2 in parts[person.profile_id][0]["points"]:
+		result.append(point + offset)
+	if person.profile_id == "customer_capybara":
+		var h: float = float(CastCatalog.profile(person.profile_id)["height"])
+		var mask: PackedVector2Array = PackedVector2Array([Vector2(-h, -h * 0.58), Vector2(-h * 0.25, -h * 0.58), Vector2(-h * 0.25, 0.0), Vector2(-h, 0.0)])
+		return Geometry2D.clip_polygons(result, mask)
+	return [result]
+
+
+func _body_uvs(person: TavernPerson, points: PackedVector2Array) -> PackedVector2Array:
+	var body: Dictionary = parts[person.profile_id][0]
+	var texture: Texture2D = SHEETS[int(CastCatalog.profile(person.profile_id)["sheet"])]
+	var result: PackedVector2Array = PackedVector2Array()
+	var offset: Vector2 = torso_offset(person)
+	var origin: Vector2 = body["origin"] as Vector2
+	var factor: float = float(body["factor"])
+	var texture_size: Vector2 = texture.get_size()
+	for point: Vector2 in points:
+		result.append(((point - offset) / factor + origin) / texture_size)
+	return result
+
+
+func draw_on(canvas: CanvasItem, person: TavernPerson) -> void:
+	var atlas: Texture2D = SHEETS[int(CastCatalog.profile(person.profile_id)["sheet"])]
+	for side: int in range(2):
+		canvas.draw_mesh(_leg_mesh(person, side), atlas)
+	draw_torso(canvas, person)
+	draw_arm(canvas, person, 0)
+	# The tail is baked into the torso image. Redraw only the core over the far arm,
+	# so the sleeve is behind the chest but remains in front of the tail.
+	var core_x: float = shoulder_position(person, 0).x + 1.0
+	var core: PackedVector2Array = PackedVector2Array([Vector2(core_x, -200.0), Vector2(200.0, -200.0), Vector2(200.0, 0.0), Vector2(core_x, 0.0)])
+	var bodies: Array[PackedVector2Array] = torso_polygons(person)
+	for body: PackedVector2Array in bodies:
+		for piece: PackedVector2Array in Geometry2D.intersect_polygons(body, core):
+			canvas.draw_polygon(piece, PackedColorArray([Color.WHITE]), _body_uvs(person, piece), atlas)
+	draw_arm(canvas, person, 1)
+	for side: int in range(2):
+		_draw_shoulder_cap(canvas, person, side, bodies, atlas)
+
+
+func draw_torso(canvas: CanvasItem, person: TavernPerson) -> void:
+	var atlas: Texture2D = SHEETS[int(CastCatalog.profile(person.profile_id)["sheet"])]
+	for body: PackedVector2Array in torso_polygons(person):
+		canvas.draw_polygon(body, PackedColorArray([Color.WHITE]), _body_uvs(person, body), atlas)
+
+
+func _draw_shoulder_cap(canvas: CanvasItem, person: TavernPerson, side: int, bodies: Array[PackedVector2Array], atlas: Texture2D) -> void:
+	var shoulder: Vector2 = shoulder_position(person, side)
+	var radius: float = float(CastCatalog.profile(person.profile_id)["height"]) * 0.055
+	var cap: PackedVector2Array = PackedVector2Array()
+	for index: int in range(16):
+		var angle: float = TAU * index / 16.0
+		cap.append(shoulder + Vector2(cos(angle) * radius, sin(angle) * radius * 0.65 - radius * 0.25))
+	for body: PackedVector2Array in bodies:
+		for piece: PackedVector2Array in Geometry2D.intersect_polygons(body, cap):
+			canvas.draw_polygon(piece, PackedColorArray([Color.WHITE]), _body_uvs(person, piece), atlas)
+
+
+func draw_arm(canvas: CanvasItem, person: TavernPerson, side: int) -> void:
+	var atlas: Texture2D = SHEETS[int(CastCatalog.profile(person.profile_id)["sheet"])]
+	var part: Dictionary = parts[person.profile_id][1 + side]
+	canvas.draw_polygon(arm_polygon(person, side), PackedColorArray([Color.WHITE]), part["uvs"] as PackedVector2Array, part.get("texture", atlas) as Texture2D)
+
+
+func cup_mount(person: TavernPerson) -> Vector2:
+	if person.profile_id == "manager":
+		return shoulder_position(person, 1) + (parts["manager"][2]["cup"] as Vector2).rotated(arm_angle(person, 1))
+	return hand_position(person, 1) + Vector2(3.0, 3.0)
+
+
+func leg_pose(person: TavernPerson, side: int) -> Dictionary:
+	var part: Dictionary = parts[person.profile_id][3 + side]
+	var h: float = float(CastCatalog.profile(person.profile_id)["height"])
+	var source_knee: Vector2 = part["knee"] as Vector2
+	var source_ankle: Vector2 = part["ankle"] as Vector2
+	var hip: Vector2 = Vector2((-1.0 if side == 0 else 1.0) * h * 0.065, -float(part["foot_bottom"]) + pelvis_bob(person))
+	var desired: Vector2 = foot_position(person, side)
+	var ankle: Vector2 = desired
+	var knee: Vector2 = hip + source_knee
+	if person.walking:
+		var upper: float = float(part["upper_length"])
+		var lower: float = float(part["lower_length"])
+		var delta: Vector2 = desired - hip
+		var distance: float = clampf(delta.length(), absf(upper - lower) + 0.001, upper + lower - 0.001)
+		var direction: Vector2 = delta.normalized()
+		ankle = hip + direction * distance
+		var along: float = (upper * upper - lower * lower + distance * distance) / (2.0 * distance)
+		var bend: float = sqrt(maxf(0.0, upper * upper - along * along))
+		knee = hip + direction * along + Vector2(direction.y, -direction.x) * bend
+	var upper_angle: float = (knee - hip).angle() - source_knee.angle()
+	var lower_angle: float = (ankle - knee).angle() - (source_ankle - source_knee).angle()
+	return {"hip": hip, "knee": knee, "ankle": ankle, "desired": desired,
+		"upper_transform": Transform2D(upper_angle, hip),
+		"lower_transform": Transform2D(lower_angle, knee - source_knee.rotated(lower_angle)),
+		"foot_transform": Transform2D(0.0, ankle - source_ankle)}
+
+
+func _leg_weights(point: Vector2, part: Dictionary) -> Vector3:
+	var knee: Vector2 = part["knee"] as Vector2
+	var ankle: Vector2 = part["ankle"] as Vector2
+	var band: float = float(part["length"]) * 0.035
+	var lower_weight: float = smoothstep(knee.y - band, knee.y + band, point.y)
+	# Wide paws extend above the ankle's center. Register the whole paw flat,
+	# blending through the shin rather than twisting the top of the toes below ground.
+	var foot_start: float = lerpf(knee.y, ankle.y, 0.25)
+	var foot_end: float = lerpf(knee.y, ankle.y, 0.65)
+	var foot_weight: float = smoothstep(foot_start, foot_end, point.y)
+	return Vector3((1.0 - lower_weight) * (1.0 - foot_weight), lower_weight * (1.0 - foot_weight), foot_weight)
+
+
+func _skin_leg_point(point: Vector2, part: Dictionary, pose: Dictionary) -> Vector2:
+	var weights: Vector3 = _leg_weights(point, part)
+	return ((pose["upper_transform"] as Transform2D) * point) * weights.x + ((pose["lower_transform"] as Transform2D) * point) * weights.y + ((pose["foot_transform"] as Transform2D) * point) * weights.z
+
+
+func leg_polygon(person: TavernPerson, side: int) -> PackedVector2Array:
+	var part: Dictionary = parts[person.profile_id][3 + side]
+	var pose: Dictionary = leg_pose(person, side)
+	var result: PackedVector2Array = PackedVector2Array()
+	for point: Vector2 in part["points"]:
+		result.append(_skin_leg_point(point, part, pose))
+	return result
+
+
+func _leg_mesh(person: TavernPerson, side: int) -> ArrayMesh:
+	var part: Dictionary = parts[person.profile_id][3 + side]
+	var source: PackedVector2Array = part["grid"] as PackedVector2Array
+	var pose: Dictionary = leg_pose(person, side)
+	var weights: PackedVector3Array = part["grid_weights"] as PackedVector3Array
+	var upper: Transform2D = pose["upper_transform"] as Transform2D
+	var lower: Transform2D = pose["lower_transform"] as Transform2D
+	var foot: Transform2D = pose["foot_transform"] as Transform2D
+	var vertices: PackedVector3Array = PackedVector3Array()
+	vertices.resize(source.size())
+	for index: int in range(source.size()):
+		var point: Vector2 = source[index]
+		var weight: Vector3 = weights[index]
+		var result: Vector2 = Vector2.ZERO
+		if weight.x > 0.0:
+			result += (upper * point) * weight.x
+		if weight.y > 0.0:
+			result += (lower * point) * weight.y
+		if weight.z > 0.0:
+			result += (foot * point) * weight.z
+		vertices[index] = Vector3(result.x, result.y, 0.0)
+	var arrays: Array = []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_TEX_UV] = part["grid_uvs"]
+	arrays[Mesh.ARRAY_INDEX] = part["indices"]
+	var key: String = person.id + ":" + str(side)
+	var mesh: ArrayMesh = _meshes.get(key) as ArrayMesh
+	if mesh == null:
+		mesh = ArrayMesh.new()
+		_meshes[key] = mesh
+	mesh.clear_surfaces()
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
+	return mesh
+
+
+func prune(active_ids: Array) -> void:
+	for key: String in _meshes.keys():
+		if key.get_slice(":", 0) not in active_ids:
+			_meshes.erase(key)

@@ -1,0 +1,82 @@
+{
+  "bartender": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  },
+  "customer_capybara": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  },
+  "customer_dog": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  },
+  "customer_fox": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  },
+  "customer_rabbit": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  },
+  "customer_raccoon": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  },
+  "customer_squirrel": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  },
+  "manager": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  },
+  "server": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  },
+  "server_carry": {
+    "encoded_frames": 132,
+    "duration_ms": 4400,
+    "size": [
+      960,
+      300
+    ]
+  }
+}

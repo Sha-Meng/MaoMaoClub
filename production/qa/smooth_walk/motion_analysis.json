@@ -1,0 +1,59 @@
+{
+  "opencv": "4.13.0",
+  "cell": [
+    320,
+    240
+  ],
+  "pairs": {
+    "bartender": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 16.801618576049805,
+      "input_sha256": "693bb34678039205f06d9a37eb54273fd2ae4a9fc05278001375b7c5523929cf"
+    },
+    "customer_capybara": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 16.933176040649414,
+      "input_sha256": "8be1100c4845ae51eedbe6c173eb07e8a62606e28df602e9df517f560119edca"
+    },
+    "customer_dog": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 30.160852432250977,
+      "input_sha256": "c1640856c03d77713d418f350762e51ede0de1c5375fad4a368ff15449d81837"
+    },
+    "customer_fox": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 25.566144943237305,
+      "input_sha256": "01e1f178bbd8ff2b3bfc540c8d6de442bd8afbcb2abc1ae872a9367c28b1a6ef"
+    },
+    "customer_rabbit": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 29.33251953125,
+      "input_sha256": "fd7ebc4db95af6db090e2f53a15da5b01fe60e4a5922fd597cd9342f3c7363a4"
+    },
+    "customer_raccoon": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 16.746885299682617,
+      "input_sha256": "1f4d4911d58ba7dc9d0c948c67ea73e1f4a44eb97257808284645ba625bc38f4"
+    },
+    "customer_squirrel": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 23.571081161499023,
+      "input_sha256": "0205cfd19a2be1d0a1eb70c73033b8f30d28589417be3c9231d19bbee09c9cf9"
+    },
+    "manager": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 20.01648712158203,
+      "input_sha256": "a2e72ea9a97050ae4b1004a0bcf313fc0b4072ceb431519e9d06c3cd4148eb1e"
+    },
+    "server": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 24.260242462158203,
+      "input_sha256": "67db2019808fffb607b436e8d79e758725f49097216cbdea547ae5159d54708f"
+    },
+    "server_carry": {
+      "count": 8,
+      "max_motion_pixels_at_2x": 26.498003005981445,
+      "input_sha256": "fd0c28c1779df25b83fdfc0993cdeb5004a1517c7c60c191fb1ecedc173838ff"
+    }
+  }
+}

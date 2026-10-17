@@ -1,5 +1,7 @@
 # 桌面挂机 MVP 技术设计
 
+> 窗口设计更新（2026-10-17）：原生透明与默认置顶已由 `enable-transparent-desktop-window` 提升为当前要求，当前行为见 `openspec/specs/desktop-window/spec.md`。下文 A/B 档保留为原始设计背景；点击穿透仍属后续范围。
+
 ## 目标
 
 构建一个最小 Windows 桌面小酒馆，用来验证桌面陪伴感、猫猫交互、顾客服务可读性，以及可持久化的基础收益。

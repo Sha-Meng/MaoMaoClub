@@ -1,0 +1,15 @@
+{
+  "frames": 216,
+  "max_detached_alpha_component_pixels": 0,
+  "worst_component_frame": null,
+  "seam_mean_channel_difference_255": {
+    "idle -> start": 0.0,
+    "start -> walk": 0.0,
+    "stop -> idle": 0.0,
+    "idle_cup -> start_cup": 0.0,
+    "start_cup -> walk_cup": 0.0,
+    "stop_cup -> idle_cup": 0.0
+  },
+  "success": true,
+  "failures": []
+}

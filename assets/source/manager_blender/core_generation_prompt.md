@@ -1,0 +1,10 @@
+# 连贯身体修订
+
+工具：内置 image_gen，透明背景；原始输出 exec-65aa47d8-e44d-4d05-8f73-4cfb957ff087.png。
+
+用户目标：腿根与腹部融合、恢复短粗腿比例，稳重自然步态。
+
+```text
+Use case: identity-preserve. Asset type: editable 2D game animation character core sprite, transparent PNG.
+Reference image 1 is the approved stout cream cat manager identity and proportions. Reference 2 is an existing parts sheet, useful only for exact cream fur, dark vest and gold chain painting style. Create ONE isolated headless, armless, tailless complete BODY CORE INCLUDING BOTH LEGS AND BOTH FEET, standing in relaxed neutral broad stance, slight three-quarter view facing right. This is one anatomical continuous silhouette from shoulders and chest down through broad fat belly, hips, short sturdy thighs, shins and broad cat paws, all already seamlessly joined. Draw no detached pieces, no panels, no text. Keep the dark open vest and gold necklace, round naked cream belly and navel. Neck cut flat at top, shoulders hidden armholes without protruding arm stumps. Critical: belly flesh flows into pelvis and outer thighs without any dark horizontal outline separating belly from legs. A subtle belly crease is okay but never a closed floating oval belly. Thick short legs, no long skinny calves, no rounded detached thigh caps, no feminine hourglass taper, no clothes on legs. Feet parallel on same ground height, broad natural gap between feet, no crossed legs. Front of paws points slightly right, front/near leg on image left, far leg image right. The exposed legs below belly occupy only 22 percent of core height; broad belly about 58 percent of core width. Both legs are already anatomically part of pelvis. Preserve hand-painted warm clean linework, no floor shadow or surrounding glow. Center entire core in a 1024 square, occupies about 75% canvas width and 85% height. High-quality opaque colors with crisp transparent outer edges. Need a coherent character torso-to-feet illustration that can deform as one continuous mesh. Do not include head, arms, hands, tail or glass.
+```

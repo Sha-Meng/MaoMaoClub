@@ -1,0 +1,8 @@
+{
+	"engine": "4.6.3-stable (official)",
+	"errors": [],
+	"gait_landmarks": 80,
+	"intermediate_frames": 32,
+	"render_and_save_ms": 759.75,
+	"transparent": true
+}

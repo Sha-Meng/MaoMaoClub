@@ -1,21 +1,32 @@
 ; Engine configuration file.
-; Pinned project engine: Godot 4.6.3 stable
-; Exact build: 4.6.3.stable.official.7d41c59c4
-;
-; It is best edited using the editor UI and not directly,
+; It's best edited using the editor UI and not directly,
 ; since the parameters that go here are not all obvious.
 ;
 ; Format:
-;   [section]
-;   param=value
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
 
 config_version=5
 
 [application]
 
 config/name="MaoMaoClub"
-config/features=PackedStringArray("4.6")
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0, 0, 0, 0)
 run/main_scene="res://app/main.tscn"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+
+[display]
+
+window/size/viewport_width=960
+window/size/viewport_height=280
+window/size/resizable=false
+window/size/borderless=true
+window/size/always_on_top=true
+window/size/transparent=true
+window/per_pixel_transparency/allowed=true
+window/subwindows/embed_subwindows=false
+window/stretch/mode="canvas_items"
 
 [debug]
 
@@ -23,3 +34,9 @@ gdscript/warnings/untyped_declaration=1
 gdscript/warnings/unsafe_property_access=1
 gdscript/warnings/unsafe_method_access=1
 gdscript/warnings/unsafe_cast=1
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+environment/defaults/default_clear_color=Color(0, 0, 0, 0)
+viewport/transparent_background=true

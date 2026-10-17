@@ -1,0 +1,77 @@
+{
+	"errors": [],
+	"samples": 640,
+	"success": true,
+	"variants": {
+		"bartender": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_capybara": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_dog": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_fox": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_rabbit": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_raccoon": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"customer_squirrel": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"manager": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"server": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		},
+		"server_carry": {
+			"drift_details": {
+
+			},
+			"head_region_changes": 0,
+			"maximum_raster_foot_drift": 0.0
+		}
+	}
+}
